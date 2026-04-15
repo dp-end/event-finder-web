@@ -15,11 +15,11 @@ namespace CleanArchitecture.Core.DTOs.Account
         public string Email { get; set; }
 
         [Required]
-        [MinLength(6)]
+        [MinLength(1)]
         public string UserName { get; set; }
 
         [Required]
-        [MinLength(6)]
+        [MinLength(1)]
         public string Password { get; set; }
 
         [Required]

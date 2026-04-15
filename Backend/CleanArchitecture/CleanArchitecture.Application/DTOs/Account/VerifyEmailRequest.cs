@@ -10,7 +10,7 @@ namespace CleanArchitecture.Core.DTOs.Account
         [Required]
         public string Token { get; set; }
         [Required]
-        [MinLength(6)]
+        [MinLength(1)]
         public string Password { get; set; }
 
         [Required]
