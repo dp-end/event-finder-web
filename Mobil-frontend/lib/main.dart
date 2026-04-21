@@ -47,7 +47,6 @@ class CampusHubApp extends StatelessWidget {
         return MaterialApp(
           title: 'Event Finder',
           debugShowCheckedModeBanner: false,
-
           themeMode: themeNotifier.value, // Temayı buradan alıyor
           theme: ThemeData(
             brightness: Brightness.light,
