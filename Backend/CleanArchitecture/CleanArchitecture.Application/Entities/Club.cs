@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+using System;
+>>>>>>> 7821c5f8587165f2309daf994d99aae3b590df08
 using System.Collections.Generic;
 
 namespace CleanArchitecture.Application.Entities
