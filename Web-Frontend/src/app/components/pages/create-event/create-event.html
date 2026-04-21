@@ -1,0 +1,131 @@
+<div class="create-event-container">
+
+  <header class="page-header">
+    <button class="back-btn" routerLink="/home">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+    </button>
+    <h2>Etkinlik Oluştur</h2>
+  </header>
+
+  @if (successMessage) {
+    <div class="alert success">{{ successMessage }}</div>
+  }
+  @if (errorMessage) {
+    <div class="alert error">{{ errorMessage }}</div>
+  }
+
+  <main class="form-wrapper">
+    <form (ngSubmit)="onSubmit()" #eventForm="ngForm" class="event-form">
+
+      <!-- BAŞLIK -->
+      <div class="form-group">
+        <label for="title">Etkinlik Başlığı <span class="required">*</span></label>
+        <input id="title" type="text" placeholder="Etkinliğinize bir başlık verin"
+               [(ngModel)]="form.title" name="title" required
+               minlength="3" maxlength="200">
+      </div>
+
+      <!-- KATEGORİ -->
+      <div class="form-group">
+        <label for="category">Kategori</label>
+        @if (isLoadingCategories) {
+          <div class="select-loading">Kategoriler yükleniyor...</div>
+        } @else {
+          <select id="category" [(ngModel)]="form.categoryId" name="categoryId">
+            <option value="">Kategori seçin (isteğe bağlı)</option>
+            @for (cat of categories; track cat.id) {
+              <option [value]="cat.id">{{ cat.name }}</option>
+            }
+          </select>
+        }
+      </div>
+
+      <!-- AÇIKLAMA -->
+      <div class="form-group">
+        <label for="description">Açıklama <span class="required">*</span></label>
+        <textarea id="description" placeholder="Etkinliğinizi detaylı tanıtın..."
+                  rows="4" [(ngModel)]="form.description" name="description" required></textarea>
+      </div>
+
+      <!-- KONUM -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="location">Mekan Adı <span class="required">*</span></label>
+          <input id="location" type="text" placeholder="Örn: Amfi Tiyatro"
+                 [(ngModel)]="form.location" name="location" required>
+        </div>
+        <div class="form-group">
+          <label for="address">Adres</label>
+          <input id="address" type="text" placeholder="Detaylı adres (isteğe bağlı)"
+                 [(ngModel)]="form.address" name="address">
+        </div>
+      </div>
+
+      <!-- TARİH -->
+      <div class="form-group">
+        <label for="date">Tarih ve Saat <span class="required">*</span></label>
+        <input id="date" type="datetime-local"
+               [(ngModel)]="form.date" name="date" required>
+      </div>
+
+      <!-- FİYAT VE KONTENJAN -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="quota">Kontenjan <span class="required">*</span></label>
+          <input id="quota" type="number" placeholder="Örn: 100" min="1"
+                 [(ngModel)]="form.quota" name="quota" required>
+        </div>
+        <div class="form-group">
+          <label for="price">Fiyat (₺)</label>
+          <input id="price" type="number" placeholder="0 = Ücretsiz" min="0"
+                 [(ngModel)]="form.price" name="price">
+        </div>
+      </div>
+
+      <!-- GÖRSEL YÜKLEME -->
+      <div class="form-group">
+        <label>Etkinlik Görseli</label>
+
+        <div class="file-upload-area">
+          <label class="file-upload-label" for="imageFile">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="16 16 12 12 8 16"></polyline>
+              <line x1="12" y1="12" x2="12" y2="21"></line>
+              <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+            </svg>
+            <span>{{ selectedFileName || 'Bilgisayardan seç (jpg, png, gif — max 5 MB)' }}</span>
+          </label>
+          <input id="imageFile" type="file" accept="image/*" (change)="onFileSelected($event)" style="display:none">
+
+          @if (imagePreviewUrl) {
+            <div class="image-preview">
+              <img [src]="imagePreviewUrl" alt="Önizleme">
+              <span class="upload-status done">Görsel seçildi</span>
+            </div>
+          }
+        </div>
+
+        <div class="url-fallback">
+          <label for="imageUrl" style="font-size:12px;color:#718096">Veya görsel URL'si girin:</label>
+          <input id="imageUrl" type="url" placeholder="https://... (isteğe bağlı)"
+                 [(ngModel)]="form.imageUrl" name="imageUrl" [disabled]="!!imagePreviewUrl">
+        </div>
+      </div>
+
+      <!-- GÖNDER -->
+      <button type="submit" class="submit-btn"
+              [disabled]="isSubmitting || !eventForm.valid">
+        @if (isSubmitting) {
+          <div class="mini-spinner"></div>
+          Oluşturuluyor...
+        } @else {
+          Etkinliği Yayınla
+        }
+      </button>
+
+    </form>
+  </main>
+</div>

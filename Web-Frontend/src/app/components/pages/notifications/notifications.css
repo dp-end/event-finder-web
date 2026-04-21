@@ -1,0 +1,156 @@
+.notifications-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 30px 20px;
+  min-height: 100vh;
+  background: #fcfcfd;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.header-title {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  color: #1a202c;
+  font-weight: 800;
+}
+
+.unread-badge {
+  background: #e53e3e;
+  color: white;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.mark-all-btn {
+  padding: 8px 16px;
+  background: #f1f5f9;
+  border: none;
+  border-radius: 10px;
+  color: #4a5568;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+.mark-all-btn:hover { background: #e2e8f0; }
+
+.back-btn {
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: #4a5568;
+}
+
+/* STATES */
+.loading-state, .error-state, .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 60px 20px;
+  text-align: center;
+  color: #718096;
+}
+.empty-state h3 { color: #1a202c; margin: 0; }
+.empty-state p { margin: 0; }
+.error-state button {
+  padding: 10px 24px;
+  background: #007bff; color: white;
+  border: none; border-radius: 12px;
+  font-weight: 700; cursor: pointer;
+}
+.spinner {
+  width: 40px; height: 40px;
+  border: 3px solid #edf2f7;
+  border-top-color: #007bff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* BİLDİRİM LİSTESİ */
+.notifications-list { display: flex; flex-direction: column; gap: 2px; }
+
+.notification-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  background: white;
+  border: 1px solid transparent;
+}
+.notification-item:hover {
+  background: #f8fafc;
+  border-color: #edf2f7;
+}
+.notification-item.unread {
+  background: #eff6ff;
+  border-color: #dbeafe;
+}
+.notification-item.unread:hover {
+  background: #dbeafe;
+}
+
+.notif-icon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+  width: 44px; height: 44px;
+  background: white;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.notif-content { flex: 1; }
+
+.notif-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+.notif-header strong { color: #1a202c; font-size: 0.95rem; }
+.notif-time { color: #a0aec0; font-size: 0.78rem; }
+
+.notif-content p {
+  margin: 0;
+  color: #4a5568;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.unread-dot {
+  width: 10px; height: 10px;
+  background: #3b82f6;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+  .notifications-container { padding: 16px; }
+  .mark-all-btn { font-size: 0.75rem; padding: 7px 12px; }
+}

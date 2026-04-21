@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(where mysql:*)",
+      "Read(//c/Program Files/MySQL/MySQL Server 8.0/bin/**)",
+      "Read(//c/Program Files/MySQL/MySQL Server 8.4/bin/**)",
+      "Bash(\"/c/Program Files/MySQL/MySQL Server 8.0/bin/mysql.exe\" -u root -p1234 -e \"SHOW DATABASES;\")",
+      "Bash(\"/c/Program Files/MySQL/MySQL Server 8.0/bin/mysql.exe\" -u root --password=\"\" -e \"SHOW DATABASES;\")",
+      "Read(//c/Users/Dell/Desktop/EventFinder/**)",
+      "Bash(npm install:*)",
+      "Bash(\"/c/Program Files/MySQL/MySQL Server 8.0/bin/mysql.exe\" -u root -pburak -e \"SHOW DATABASES;\")",
+      "Bash(dotnet ef:*)",
+      "Bash(flutter devices:*)",
+      "Bash(dotnet run:*)",
+      "Bash(npm start:*)",
+      "Bash(flutter pub:*)",
+      "Bash(flutter run:*)",
+      "Read(//c/Users/Dell/.claude/projects/c--Users-Dell-Desktop-EventFinder-event-finder-web/memory/**)",
+      "Bash(start http://localhost:4200)",
+      "Bash(taskkill /F /IM \"CleanArchitecture.WebApi.exe\")",
+      "Bash(taskkill /F /FI \"WINDOWTITLE eq dotnet*\")",
+      "Read(//tmp/**)",
+      "Bash('/c/Program Files/MySQL/MySQL Server 8.0/bin/mysql.exe' -h mysql-e282ff8-eventfinder.g.aivencloud.com -P 11780 -u avnadmin -pAVNS_72gMRGyN34cIgFHIx7i --ssl-mode=REQUIRED defaultdb -e 'SET @@SESSION.sql_require_primary_key=0;')",
+      "Bash('/c/Program Files/MySQL/MySQL Server 8.0/bin/mysql.exe' -h mysql-e282ff8-eventfinder.g.aivencloud.com -P 11780 -u avnadmin -pAVNS_72gMRGyN34cIgFHIx7i --ssl-mode=REQUIRED defaultdb)",
+      "Bash('/c/Program Files/MySQL/MySQL Server 8.0/bin/mysql.exe' -h mysql-e282ff8-eventfinder.g.aivencloud.com -P 11780 -u avnadmin -pAVNS_72gMRGyN34cIgFHIx7i --ssl-mode=REQUIRED defaultdb -e 'SELECT MigrationId FROM __EFMigrationsHistory; SHOW TABLES;')",
+      "Bash('/c/Program Files/MySQL/MySQL Server 8.0/bin/mysql.exe' -h mysql-e282ff8-eventfinder.g.aivencloud.com -P 11780 -u avnadmin -pAVNS_72gMRGyN34cIgFHIx7i --ssl-mode=REQUIRED defaultdb -e 'SELECT TABLE_NAME, CONSTRAINT_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA='\\\\''defaultdb'\\\\'' AND REFERENCED_TABLE_NAME IS NOT NULL ORDER BY TABLE_NAME;')",
+      "Bash('/c/Program Files/MySQL/MySQL Server 8.0/bin/mysql.exe' -h mysql-e282ff8-eventfinder.g.aivencloud.com -P 11780 -u avnadmin -pAVNS_72gMRGyN34cIgFHIx7i --ssl-mode=REQUIRED defaultdb -e 'SET FOREIGN_KEY_CHECKS=0; DROP TABLE IF EXISTS AspNetRoleClaims, AspNetRoles, AspNetUserClaims, AspNetUserLogins, AspNetUserRoles, AspNetUserTokens, AspNetUsers, Clubs, Events, RefreshToken, Tickets, __EFMigrationsHistory; SET FOREIGN_KEY_CHECKS=1;')",
+      "Bash('/c/Program Files/MySQL/MySQL Server 8.0/bin/mysql.exe' -h mysql-e282ff8-eventfinder.g.aivencloud.com -P 11780 -u avnadmin -pAVNS_72gMRGyN34cIgFHIx7i --ssl-mode=REQUIRED defaultdb -e 'SHOW TABLES;')",
+      "Bash('/c/Program Files/MySQL/MySQL Server 8.0/bin/mysql.exe' -h mysql-e282ff8-eventfinder.g.aivencloud.com -P 11780 -u avnadmin -pAVNS_72gMRGyN34cIgFHIx7i --ssl-mode=REQUIRED defaultdb -e 'SELECT MigrationId FROM __EFMigrationsHistory; SELECT '\\\\''---'\\\\''; SHOW TABLES;')",
+      "Bash(netstat -ano)",
+      "Bash(awk '{print $5}')",
+      "Bash(xargs -I{} taskkill /F /PID {})",
+      "Bash(taskkill /F /IM \"dotnet.exe\")",
+      "Bash(taskkill //F //PID 12196)",
+      "Bash(curl -s -X POST http://localhost:5000/api/Account/authenticate -H 'Content-Type: application/json' -d '{\"email\":\"superadmin@gmail.com\",\"password\":\"123Pa$$word!\"}')"
+    ]
+  }
+}

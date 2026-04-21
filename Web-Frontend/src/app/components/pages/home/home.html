@@ -1,0 +1,131 @@
+<div class="home-layout">
+
+  <!-- ÜST NAVİGASYON -->
+  <header class="top-nav">
+    <div class="menu-btn" (click)="openMenu()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4a5568" stroke-width="2">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </div>
+    <div class="search-container">
+      <div class="search-box">
+        <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a0aec0" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text"
+               placeholder="Etkinlik, topluluk veya mekan ara..."
+               [(ngModel)]="searchText"
+               (input)="onSearchInput()">
+      </div>
+    </div>
+    <button class="filter-btn" [class.active]="freeOnly" (click)="toggleFreeOnly()" title="Sadece ücretsiz">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+      </svg>
+    </button>
+  </header>
+
+  <!-- KATEGORİ ÇUBUĞU -->
+  <div class="category-bar">
+    <button class="category-chip" [class.active]="activeCategory === 'Tümü'" (click)="selectCategory('Tümü')">
+      Tümü
+    </button>
+    @for (cat of categories; track cat.id) {
+      <button class="category-chip"
+              [class.active]="activeCategory === cat.name"
+              (click)="selectCategory(cat.name)">
+        {{ cat.name }}
+      </button>
+    }
+  </div>
+
+  <!-- ZAMAN FİLTRESİ -->
+  <div class="time-filter-bar">
+    @for (period of timePeriods; track period) {
+      <button class="time-chip"
+              [class.active]="activeTimePeriod === period"
+              (click)="selectTimePeriod(period)">
+        {{ period }}
+      </button>
+    }
+  </div>
+
+  <!-- ANA İÇERİK -->
+  <main class="content-grid">
+
+    <!-- ETKİNLİKLER -->
+    <section class="events-column">
+
+      @if (isLoading) {
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <p>Etkinlikler yükleniyor...</p>
+        </div>
+      } @else if (error) {
+        <div class="error-state">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#e53e3e" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <p>{{ error }}</p>
+          <button class="retry-btn" (click)="loadEvents()">Tekrar Dene</button>
+        </div>
+      } @else if (events.length === 0) {
+        <div class="empty-state">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#a0aec0" stroke-width="1.5">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <p>Arama kriterlerinize uygun etkinlik bulunamadı.</p>
+        </div>
+      } @else {
+        @for (evt of events; track evt.id) {
+          <app-event-card [event]="evt"></app-event-card>
+        }
+      }
+
+    </section>
+
+    <!-- SAĞ KOLON -->
+    <aside class="sidebar-column">
+      <div class="ranking-card">
+        <div class="ranking-header">
+          <span class="trophy">🏆</span>
+          <h3>Popüler Kulüpler</h3>
+        </div>
+
+        @if (isLoadingClubs) {
+          <div class="clubs-loading">
+            @for (i of [1,2,3,4,5]; track i) {
+              <div class="skeleton-item"></div>
+            }
+          </div>
+        } @else {
+          <div class="ranking-list">
+            @for (club of topClubs; track club.id; let i = $index) {
+              <div class="ranking-item" [routerLink]="['/club', club.id]">
+                <span class="rank-number">{{ i + 1 }}</span>
+                <div class="club-circle">{{ club.initials }}</div>
+                <div class="club-details">
+                  <h4>{{ club.name }}</h4>
+                  <p>{{ club.followerCount }} takipçi</p>
+                </div>
+                <svg class="go-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </div>
+            } @empty {
+              <p class="empty-clubs">Henüz kulüp yok.</p>
+            }
+          </div>
+        }
+      </div>
+    </aside>
+
+  </main>
+
+</div>

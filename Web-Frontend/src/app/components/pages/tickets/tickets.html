@@ -1,0 +1,147 @@
+<div class="tickets-container">
+
+  <header class="page-header">
+    <button class="back-btn" routerLink="/home">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+    </button>
+    <h1>Biletlerim</h1>
+    <span class="ticket-count">{{ tickets.length }} bilet</span>
+  </header>
+
+  @if (isLoading) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Biletler yükleniyor...</p>
+    </div>
+  } @else if (error) {
+    <div class="error-state">
+      <p>{{ error }}</p>
+      <button (click)="loadTickets()">Tekrar Dene</button>
+    </div>
+  } @else if (tickets.length === 0) {
+    <div class="empty-state">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#cbd5e0" stroke-width="1.5">
+        <rect x="2" y="7" width="20" height="10" rx="2" ry="2"></rect>
+        <path d="M6 7v10"></path>
+        <path d="M18 7v10"></path>
+      </svg>
+      <h3>Henüz biletiniz yok</h3>
+      <p>Etkinliklere katılarak bilet alabilirsiniz.</p>
+      <button routerLink="/home">Etkinlikleri Keşfet</button>
+    </div>
+  } @else {
+
+    <!-- AKTİF BİLETLER -->
+    @if (activeTickets.length > 0) {
+      <section class="ticket-section">
+        <h2 class="section-title">Aktif Biletler <span>{{ activeTickets.length }}</span></h2>
+        <div class="tickets-list">
+          @for (ticket of activeTickets; track ticket.id) {
+            <div class="ticket-card active" (click)="openTicket(ticket)">
+              <div class="ticket-image-col">
+                @if (ticket.eventImageUrl) {
+                  <img [src]="resolveImageUrl(ticket.eventImageUrl)" [alt]="ticket.eventTitle">
+                } @else {
+                  <div class="img-placeholder">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#cbd5e0" stroke-width="1.5">
+                      <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                      <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                      <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                  </div>
+                }
+                <span class="status-badge active">Aktif</span>
+              </div>
+              <div class="ticket-info">
+                <h3>{{ ticket.eventTitle }}</h3>
+                @if (ticket.clubName) {
+                  <p class="club-name">{{ ticket.clubName }}</p>
+                }
+                <div class="ticket-meta">
+                  <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> {{ formatDate(ticket.eventDate) }}</span>
+                  <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> {{ ticket.eventLocation }}</span>
+                </div>
+              </div>
+              <div class="ticket-action">
+                <div class="qr-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#007bff" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                  </svg>
+                </div>
+                <span>QR Göster</span>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- GEÇMİŞ BİLETLER -->
+    @if (usedTickets.length > 0) {
+      <section class="ticket-section">
+        <h2 class="section-title used">Kullanılmış <span>{{ usedTickets.length }}</span></h2>
+        <div class="tickets-list">
+          @for (ticket of usedTickets; track ticket.id) {
+            <div class="ticket-card used">
+              <div class="ticket-image-col">
+                @if (ticket.eventImageUrl) {
+                  <img [src]="resolveImageUrl(ticket.eventImageUrl)" [alt]="ticket.eventTitle">
+                } @else {
+                  <div class="img-placeholder"></div>
+                }
+                <span class="status-badge used">Kullanıldı</span>
+              </div>
+              <div class="ticket-info">
+                <h3>{{ ticket.eventTitle }}</h3>
+                <div class="ticket-meta">
+                  <span>{{ formatDate(ticket.eventDate) }}</span>
+                </div>
+              </div>
+              <div class="ticket-number">{{ ticket.ticketNumber }}</div>
+            </div>
+          }
+        </div>
+      </section>
+    }
+
+  }
+
+</div>
+
+<!-- QR MODAL -->
+@if (selectedTicket) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="qr-modal" (click)="$event.stopPropagation()">
+      <button class="modal-close" (click)="closeModal()">✕</button>
+      <h2>{{ selectedTicket.eventTitle }}</h2>
+      <p class="modal-club">{{ selectedTicket.clubName }}</p>
+      <p class="modal-date">{{ formatDate(selectedTicket.eventDate) }}</p>
+
+      <!-- QR kod için metin temsili (gerçek QR kütüphanesi eklenebilir) -->
+      <div class="qr-code-display">
+        <div class="qr-placeholder">
+          <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="#1a202c" stroke-width="1.5">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+        </div>
+        <p class="qr-code-text">{{ selectedTicket.qrCode }}</p>
+      </div>
+
+      <div class="ticket-number-display">
+        <span>Bilet No:</span>
+        <strong>{{ selectedTicket.ticketNumber }}</strong>
+      </div>
+
+      <p class="modal-hint">Bu QR kodu etkinlik girişinde gösterin</p>
+    </div>
+  </div>
+}

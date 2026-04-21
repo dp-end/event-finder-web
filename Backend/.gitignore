@@ -1,0 +1,17 @@
+# .NET (Backend)
+bin/
+obj/
+.vs/
+*.user
+*.userosscache
+*.sln.doccache
+
+# Node & Angular (Frontend)
+node_modules/
+dist/
+.angular/
+.vscode/
+
+# İşletim Sistemi
+.DS_Store
+Thumbs.db

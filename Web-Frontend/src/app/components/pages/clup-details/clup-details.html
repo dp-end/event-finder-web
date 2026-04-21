@@ -1,0 +1,114 @@
+@if (isLoading) {
+  <div class="loading-page">
+    <div class="spinner"></div>
+    <p>Kulüp yükleniyor...</p>
+  </div>
+} @else if (error || !club) {
+  <div class="error-page">
+    <p>{{ error || 'Kulüp bulunamadı.' }}</p>
+    <button routerLink="/home">Ana Sayfaya Dön</button>
+  </div>
+} @else {
+
+<div class="club-page-container">
+
+  <!-- KAPAK FOTOĞRAFI -->
+  <div class="cover-photo"
+       [style.backgroundImage]="club.coverImageUrl ? 'url(' + resolveImageUrl(club.coverImageUrl) + ')' : 'none'">
+    <button class="back-btn" routerLink="/home">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+    </button>
+  </div>
+
+  <!-- PROFİL KARTI -->
+  <div class="club-profile-card">
+    <div class="profile-content">
+      <div class="profile-main-row">
+        <div class="club-logo">{{ club.initials }}</div>
+        <div class="club-titles">
+          <h1>{{ club.name }}</h1>
+          <span class="category-chip">{{ club.category }}</span>
+        </div>
+        <button class="follow-btn" [class.following]="isFollowing" (click)="toggleFollow()">
+          @if (isFollowing) {
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            Takip Ediliyor
+          } @else {
+            Takip Et
+          }
+        </button>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-box">
+          <strong>{{ club.followerCount }}</strong>
+          <span>Takipçi</span>
+        </div>
+        <div class="stat-box">
+          <strong>{{ club.eventCount }}</strong>
+          <span>Etkinlik</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEKMELER -->
+  <div class="custom-tabs">
+    <button class="tab-btn" [class.active]="activeTab === 'events'" (click)="switchTab('events')">
+      Etkinlikler
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'about'" (click)="switchTab('about')">
+      Hakkında
+    </button>
+  </div>
+
+  <!-- SEKME İÇERİĞİ -->
+  <main class="tab-content">
+
+    @if (activeTab === 'events') {
+      @if (isLoadingEvents) {
+        <div class="loading-state"><div class="spinner"></div></div>
+      } @else if (clubEvents.length === 0) {
+        <div class="empty-state">
+          <p>Bu kulüp henüz etkinlik paylaşmadı.</p>
+        </div>
+      } @else {
+        <div class="events-grid">
+          @for (evt of clubEvents; track evt.id) {
+            <app-event-card [event]="evt"></app-event-card>
+          }
+        </div>
+      }
+    }
+
+    @if (activeTab === 'about') {
+      <div class="about-section">
+        <div class="about-card">
+          <h3>Kulüp Hakkında</h3>
+          <p>{{ club.description }}</p>
+        </div>
+
+        <div class="info-grid">
+          @if (club.instagramHandle) {
+            <div class="info-card">
+              <span class="icon">📸</span>
+              <div>
+                <label>Instagram</label>
+                <p>{{ club.instagramHandle }}</p>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+  </main>
+
+</div>
+
+}

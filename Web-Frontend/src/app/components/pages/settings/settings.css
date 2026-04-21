@@ -1,0 +1,169 @@
+.settings-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Başlık */
+.page-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.back-btn {
+  background: white; border: 1px solid #e2e8f0; border-radius: 12px;
+  width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: #4a5568; transition: background 0.2s;
+}
+.back-btn:hover { background: #f8fafc; }
+
+.title-group { display: flex; align-items: center; gap: 10px; }
+.title-group h1 { margin: 0; font-size: 1.5rem; color: #1a202c; }
+
+/* Ayar Grupları */
+.settings-content {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.group-title {
+  font-size: 0.95rem;
+  color: #718096;
+  margin: 0 0 12px 15px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Ayar Kartı (Beyaz Kutu) */
+.settings-card {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #edf2f7;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.01);
+}
+
+/* Tek Bir Ayar Satırı */
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.setting-item:hover { background: #f8fafc; }
+
+.setting-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Görseldeki açık mavi ikon kutusu */
+.icon-box {
+  width: 44px;
+  height: 44px;
+  background-color: #e0f2fe;
+  color: #0284c7;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.setting-text h4 { margin: 0 0 4px 0; font-size: 1.05rem; color: #1a202c; font-weight: 600; }
+.setting-text p { margin: 0; font-size: 0.85rem; color: #718096; }
+
+/* Sağdaki Ok İşareti */
+.chevron { color: #cbd5e1; }
+
+/* Araya Çizilen Çizgi */
+.divider {
+  height: 1px;
+  background-color: #f1f5f9;
+  margin: 0 24px;
+}
+
+/* iOS Tarzı Şalter (Toggle Switch) */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 26px;
+}
+
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #cbd5e1;
+  transition: .3s;
+  border-radius: 26px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+input:checked + .slider { background-color: #007bff; }
+input:checked + .slider:before { transform: translateX(22px); }
+
+/* Dil Seçici (Select Dropdown) */
+.language-select {
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: #1a202c;
+  background-color: white;
+  cursor: pointer;
+  outline: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* Çıkış Yap Butonu */
+.logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 16px;
+  margin-top: 10px;
+  background: white;
+  border: 1px solid #fee2e2;
+  border-radius: 16px;
+  color: #ef4444;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.logout-btn:hover {
+  background: #fef2f2;
+}

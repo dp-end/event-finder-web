@@ -1,0 +1,137 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
+
+:host {
+  /* Daha canlı ve enerjik renk geçişleri */
+  --primary-gradient: linear-gradient(135deg, rgba(102, 126, 234, 0.7) 0%, rgba(118, 75, 162, 0.7) 100%);
+  --accent-color: #667eea;
+  --input-focus: rgba(102, 126, 234, 0.25);
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  position: relative;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  padding: 20px;
+  overflow: hidden;
+
+  /* CANLI ÜNİVERSİTE FESTİVALİ VE KONSER ARKA PLANI */
+  /* Bu görsel, renkli ışıklar ve eğlenen gençlerle tam bir etkinlik havası verir */
+  background-image: url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* Arka plan üzerine renkli ve hareketli bir katman (Biraz daha şeffaf bıraktık) */
+.login-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--primary-gradient);
+  z-index: 1;
+}
+
+.login-card {
+  position: relative;
+  z-index: 2; /* Arka planın üstünde kalması için */
+  background: rgba(255, 255, 255, 0.85); /* Formun net okunması için hafif opak */
+  backdrop-filter: blur(20px); /* Arka plandaki görseli daha fazla bulanıklaştırır */
+  padding: 2.8rem;
+  border-radius: 28px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 420px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.logo-wrapper {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  width: 65px;
+  height: 65px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.2rem;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.title-group h2 {
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: #1a202c;
+  margin: 0;
+}
+
+.title-group p {
+  color: #4a5568;
+  font-weight: 500;
+  margin-top: 6px;
+  font-size: 0.95rem;
+}
+
+/* Form elemanları bir öncekiyle uyumlu devam ediyor */
+.form-group { margin-bottom: 1.5rem; text-align: left; }
+
+.label-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+
+.form-group label { font-weight: 600; font-size: 0.85rem; color: #2d3748; }
+
+input {
+  width: 100%;
+  padding: 14px 18px;
+  border: 2px solid #e2e8f0;
+  border-radius: 14px;
+  background: white;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 4px var(--input-focus);
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 15px -3px rgba(102, 126, 234, 0.4);
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+  box-shadow: 0 15px 25px -5px rgba(102, 126, 234, 0.5);
+}
+
+.footer-link {
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: #4a5568;
+}
+
+.footer-link a {
+  color: #667eea;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.error-msg { color: #e53e3e; font-size: 0.8rem; margin-top: 5px; display: block; }

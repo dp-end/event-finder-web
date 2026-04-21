@@ -1,0 +1,56 @@
+<div class="register-container">
+  <div class="register-card">
+    <div class="header-section">
+      <button class="back-btn" (click)="goBack()" type="button">←</button>
+      <div class="title-group">
+        <h2>Topluluk Kaydı</h2>
+        <p>Kulüp bilgilerini girin</p>
+      </div>
+    </div>
+
+    <form [formGroup]="clubForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label>Kulüp Adı</label>
+        <input type="text" formControlName="clubName" placeholder="Kulübünüzün tam adı">
+      </div>
+
+      <div class="form-group">
+        <label>Kulüp E-postası</label>
+        <input type="email" formControlName="clubEmail" placeholder="kulup@universite.edu.tr">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group half-width">
+          <label>Danışman Hoca</label>
+          <input type="text" formControlName="advisorName" placeholder="Ad Soyad">
+        </div>
+        <div class="form-group half-width">
+          <label>Kulüp Telefonu</label>
+          <input type="tel" formControlName="phoneNumber" placeholder="05XX...">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Referans Numarası</label>
+        <input type="text" formControlName="referenceNumber" placeholder="REF-XXXXX">
+      </div>
+
+      <div class="form-group">
+        <label>Üniversite</label>
+        <input type="text" formControlName="university" placeholder="Bağlı olduğunuz üniversite">
+      </div>
+
+      <div class="form-group">
+        <label>Şifre</label>
+        <input type="password" formControlName="password" placeholder="En az 8 karakter">
+      </div>
+
+      <button type="submit" class="submit-btn" [disabled]="clubForm.invalid">Kayıt Ol</button>
+
+      <div class="footer-link">
+        <span>Topluluk hesabınız var mı? </span>
+        <a routerLink="/login">Giriş Yap</a>
+      </div>
+    </form>
+  </div>
+</div>
