@@ -1,0 +1,16 @@
+
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #fcfcfd;
+  position: relative;
+  overflow-x: hidden; /* Sağda solda taşma olmasın diye */
+}
+
+/* Sayfa içeriği artık tüm ekranı kaplayacak */
+.page-content {
+  flex-grow: 1;
+  width: 100%;
+  padding: 0;
+  /* Eskiden burada olan margin-left: 280px; kısmını sildik! */
+}

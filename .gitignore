@@ -1,0 +1,16 @@
+# Web & Mobil Frontend
+**/node_modules/
+**/.angular/
+**/.vite/
+**/dist/
+
+# Backend (.NET)
+**/bin/
+**/obj/
+**/.vs/
+**/.vscode/
+appsettings.Development.json
+
+# OS files
+.DS_Store
+Thumbs.db

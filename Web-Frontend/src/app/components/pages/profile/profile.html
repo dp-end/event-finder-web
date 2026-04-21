@@ -1,0 +1,79 @@
+<div class="profile-container">
+
+  <header class="page-header">
+    <button class="back-btn" routerLink="/home">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+    </button>
+  </header>
+
+  @if (!user) {
+    <div class="not-logged-in">
+      <p>Profili görüntülemek için <a routerLink="/login">giriş yapın</a>.</p>
+    </div>
+  } @else {
+
+    <div class="profile-header-section">
+      <div class="cover-photo"></div>
+      <div class="profile-info-content">
+        <div class="avatar-large">{{ initials }}</div>
+        <h1 class="user-name">{{ fullName }}</h1>
+        <p class="user-email">{{ user.email }}</p>
+
+        <div class="user-details-row">
+          @if (user.roles.length) {
+            <span class="role-badge">{{ user.roles[0] }}</span>
+          }
+          @if (isClubUser()) {
+            <span>🏛️ Kulüp Yöneticisi</span>
+          }
+          @if (isAdmin()) {
+            <span>⭐ Yönetici</span>
+          }
+        </div>
+
+        <div class="action-btns">
+          @if (isClubUser()) {
+            <button class="create-event-btn" routerLink="/create-event">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              Etkinlik Oluştur
+            </button>
+          }
+          <button class="tickets-btn" routerLink="/tickets">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="7" width="20" height="10" rx="2" ry="2"></rect>
+              <path d="M6 7v10"></path>
+              <path d="M18 7v10"></path>
+            </svg>
+            Biletlerim
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kulüp yöneticisinin etkinlikleri -->
+    @if (isClubUser()) {
+      <div class="events-section">
+        <h3 class="section-title">Kulübümün Etkinlikleri</h3>
+        @if (isLoadingEvents) {
+          <div class="loading-state"><div class="spinner"></div></div>
+        } @else if (myEvents.length === 0) {
+          <p class="empty-text">Henüz etkinlik oluşturulmamış.</p>
+        } @else {
+          <div class="events-grid">
+            @for (event of myEvents; track event.id) {
+              <app-event-card [event]="event"></app-event-card>
+            }
+          </div>
+        }
+      </div>
+    }
+
+  }
+
+</div>

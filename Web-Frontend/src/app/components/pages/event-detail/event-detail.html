@@ -1,0 +1,235 @@
+@if (isLoading) {
+  <div class="loading-page">
+    <div class="spinner"></div>
+    <p>Etkinlik yükleniyor...</p>
+  </div>
+} @else if (error || !event) {
+  <div class="error-page">
+    <p>{{ error || 'Etkinlik bulunamadı.' }}</p>
+    <button routerLink="/home">Ana Sayfaya Dön</button>
+  </div>
+} @else {
+
+<div class="event-detail-page">
+
+  <!-- KAPAK FOTOĞRAFI -->
+  <div class="cover-section" [style.backgroundImage]="event.imageUrl ? 'url(' + resolveImageUrl(event.imageUrl) + ')' : 'none'">
+    <div class="overlay"></div>
+    <button class="back-btn" routerLink="/home">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+    </button>
+    <div class="cover-content">
+      @if (event.categoryName) {
+        <span class="category-badge">{{ event.categoryName }}</span>
+      }
+      <h1>{{ event.title }}</h1>
+      <div class="cover-meta">
+        <span class="like-count" [class.liked]="event.isLikedByCurrentUser">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+          {{ event.likeCount }}
+        </span>
+        <span class="comment-count">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          {{ event.commentCount }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-container">
+
+    <!-- ANA İÇERİK -->
+    <div class="main-content">
+
+      <!-- KULÜP SATIRI -->
+      @if (event.clubId) {
+        <div class="club-row" [routerLink]="['/club', event.clubId]">
+          <div class="club-logo">{{ event.clubInitials }}</div>
+          <div class="club-info">
+            <span>Düzenleyen Topluluk</span>
+            <h4>{{ event.clubName }}</h4>
+          </div>
+          <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </div>
+      } @else if (event.ownerId) {
+        <div class="club-row" [routerLink]="['/home']" [queryParams]="{ownerId: event.ownerId}">
+          <div class="club-logo">
+            @if (event.ownerProfileImageUrl) {
+              <img [src]="resolveImageUrl(event.ownerProfileImageUrl)" [alt]="event.ownerName || 'Organizatör'" style="width:100%;height:100%;object-fit:cover">
+            } @else {
+              {{ event.ownerInitials || '?' }}
+            }
+          </div>
+          <div class="club-info">
+            <span>Düzenleyen Kişi</span>
+            <h4>{{ event.ownerName || 'Organizatör' }}</h4>
+          </div>
+          <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </div>
+      }
+
+      <!-- DETAY KARTLARI -->
+      <div class="details-grid">
+        <div class="detail-card">
+          <div class="icon-box">📅</div>
+          <div class="detail-text">
+            <label>Tarih & Saat</label>
+            <p>{{ formatDate(event.date) }}</p>
+          </div>
+        </div>
+        <div class="detail-card">
+          <div class="icon-box">📍</div>
+          <div class="detail-text">
+            <label>Konum</label>
+            <p>{{ event.location }}</p>
+            @if (event.address) {
+              <small>{{ event.address }}</small>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- AÇIKLAMA -->
+      <div class="about-section">
+        <h3>Etkinlik Hakkında</h3>
+        <p>{{ event.description }}</p>
+      </div>
+
+      <!-- YORUMLAR -->
+      <div class="comments-section">
+        <h3>Yorumlar <span class="comment-badge">{{ event.commentCount }}</span></h3>
+
+        <!-- Yorum yaz -->
+        @if (isLoggedIn) {
+          <div class="comment-input-row">
+            <textarea [(ngModel)]="newComment"
+                      placeholder="Yorum yaz..."
+                      rows="3"
+                      maxlength="500"></textarea>
+            <button class="send-btn"
+                    (click)="postComment()"
+                    [disabled]="!newComment.trim() || isPostingComment">
+              @if (isPostingComment) {
+                <div class="mini-spinner"></div>
+              } @else {
+                Gönder
+              }
+            </button>
+          </div>
+        } @else {
+          <div class="login-prompt">
+            <a routerLink="/login">Giriş yap</a> ve yorum yap.
+          </div>
+        }
+
+        <!-- Yorum listesi -->
+        @if (isLoadingComments) {
+          <div class="comments-loading">
+            <div class="spinner-small"></div>
+          </div>
+        } @else {
+          @for (comment of comments; track comment.id) {
+            <div class="comment-item">
+              <div class="comment-avatar">{{ comment.userInitials }}</div>
+              <div class="comment-body">
+                <div class="comment-header">
+                  <strong>{{ comment.userFullName }}</strong>
+                  <span class="comment-time">{{ formatDate(comment.createdAt) }}</span>
+                  @if (comment.applicationUserId === currentUserId) {
+                    <button class="delete-comment-btn"
+                            (click)="deleteComment(comment.id)"
+                            title="Sil">✕</button>
+                  }
+                </div>
+                <p>{{ comment.content }}</p>
+              </div>
+            </div>
+          } @empty {
+            <p class="no-comments">Henüz yorum yapılmamış. İlk yorumu sen yap!</p>
+          }
+        }
+      </div>
+
+    </div>
+
+    <!-- BİLET SIDEBAR -->
+    <aside class="ticket-sidebar">
+      <div class="ticket-card">
+        <h3>Etkinliğe Katıl</h3>
+
+        <div class="price-row">
+          <span class="price-label">Fiyat</span>
+          <span class="price-value" [class.free]="event.price === 0">
+            {{ formatPrice(event.price) }}
+          </span>
+        </div>
+
+        <div class="quota-info">
+          <div class="quota-bar">
+            <div class="progress" [style.width]="quotaPercent + '%'"></div>
+          </div>
+          <p>
+            <strong>{{ event.quota - event.remainingQuota }}</strong>
+            / {{ event.quota }} kişi kayıt oldu
+          </p>
+        </div>
+
+        @if (ticketMessage) {
+          <div class="success-msg">{{ ticketMessage }}</div>
+        }
+        @if (ticketError) {
+          <div class="error-msg">{{ ticketError }}</div>
+        }
+
+        @if (event.hasTicket) {
+          <div class="has-ticket-badge">
+            ✅ Biletiniz mevcut
+          </div>
+          <button class="view-tickets-btn" routerLink="/tickets">Biletlerime Git</button>
+        } @else if (event.remainingQuota === 0) {
+          <button class="buy-btn disabled" disabled>Kontenjan Doldu</button>
+        } @else if (!isLoggedIn) {
+          <button class="buy-btn" routerLink="/login">Giriş Yap ve Kaydol</button>
+        } @else {
+          <button class="buy-btn"
+                  (click)="buyTicket()"
+                  [disabled]="isPurchasing">
+            @if (isPurchasing) {
+              <div class="mini-spinner"></div>
+            } @else {
+              Hemen Kaydol
+            }
+          </button>
+        }
+
+        <p class="secure-text">🔒 Güvenli işlem</p>
+      </div>
+
+      <!-- BEĞEN BUTONU -->
+      <button class="like-btn" [class.liked]="event.isLikedByCurrentUser"
+              (click)="toggleLike()" [disabled]="isLiking">
+        <svg width="20" height="20" viewBox="0 0 24 24"
+             [attr.fill]="event.isLikedByCurrentUser ? '#e53e3e' : 'none'"
+             stroke="currentColor" stroke-width="2">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+        </svg>
+        {{ event.isLikedByCurrentUser ? 'Beğenildi' : 'Beğen' }}
+        <span>({{ event.likeCount }})</span>
+      </button>
+    </aside>
+
+  </div>
+</div>
+
+}

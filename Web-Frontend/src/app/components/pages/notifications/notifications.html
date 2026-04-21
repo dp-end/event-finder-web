@@ -1,0 +1,62 @@
+<div class="notifications-container">
+
+  <header class="page-header">
+    <button class="back-btn" routerLink="/home">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+    </button>
+    <div class="header-title">
+      <h1>Bildirimler</h1>
+      @if (unreadCount > 0) {
+        <span class="unread-badge">{{ unreadCount }}</span>
+      }
+    </div>
+    @if (unreadCount > 0) {
+      <button class="mark-all-btn" (click)="markAllAsRead()">Tümünü Okundu İşaretle</button>
+    }
+  </header>
+
+  @if (isLoading) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Bildirimler yükleniyor...</p>
+    </div>
+  } @else if (error) {
+    <div class="error-state">
+      <p>{{ error }}</p>
+      <button (click)="loadNotifications()">Tekrar Dene</button>
+    </div>
+  } @else if (notifications.length === 0) {
+    <div class="empty-state">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#cbd5e0" stroke-width="1.5">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+      </svg>
+      <h3>Bildirim yok</h3>
+      <p>Yeni bildirimler burada görünecek.</p>
+    </div>
+  } @else {
+    <div class="notifications-list">
+      @for (notif of notifications; track notif.id) {
+        <div class="notification-item"
+             [class.unread]="!notif.isRead"
+             (click)="markAsRead(notif)">
+          <div class="notif-icon">{{ getTypeIcon(notif.type) }}</div>
+          <div class="notif-content">
+            <div class="notif-header">
+              <strong>{{ notif.title }}</strong>
+              <span class="notif-time">{{ formatDate(notif.createdAt) }}</span>
+            </div>
+            <p>{{ notif.body }}</p>
+          </div>
+          @if (!notif.isRead) {
+            <div class="unread-dot"></div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+</div>

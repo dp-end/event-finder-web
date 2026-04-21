@@ -1,0 +1,59 @@
+<div class="login-container">
+  <div class="login-card">
+
+    <div class="header-section">
+      <div class="logo-wrapper club-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+      </div>
+      <div class="title-group">
+        <h2>Topluluk Girişi</h2>
+        <p>EventFinder</p>
+      </div>
+    </div>
+
+    <div *ngIf="errorMessage" class="error-container global-error" style="background-color: #ffe6e6; color: #d8000c; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center; font-size: 14px; border: 1px solid #ffcccc;">
+      {{ errorMessage }}
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+      <div class="form-group">
+        <label>Topluluk E-posta Adresi</label>
+        <input type="email" formControlName="email" placeholder="topluluk@posta.com">
+        <div class="error-container" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+          <small class="error-msg" *ngIf="loginForm.get('email')?.errors?.['required']">E-posta alanı zorunludur.</small>
+          <small class="error-msg" *ngIf="loginForm.get('email')?.errors?.['email']">Geçerli bir e-posta girin.</small>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Şifre</label>
+        <input type="password" formControlName="password" placeholder="••••••••">
+        <div class="error-container" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+          <small class="error-msg" *ngIf="loginForm.get('password')?.errors?.['required']">Şifre zorunludur.</small>
+          <small class="error-msg" *ngIf="loginForm.get('password')?.errors?.['minlength']">En az 8 karakter olmalı.</small>
+          <small class="error-msg" *ngIf="loginForm.get('password')?.errors?.['pattern']">Şifre en az 1 büyük harf ve 1 özel karakter içermelidir.</small>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn club-btn" [disabled]="loginForm.invalid || isLoading">
+        <span *ngIf="isLoading">Giriş yapılıyor...</span>
+        <span *ngIf="!isLoading">Topluluk Olarak Giriş Yap</span>
+      </button>
+
+      <div class="footer-link">
+        <span>Topluluk hesabın yok mu? </span>
+        <a routerLink="/register-club">Topluluk Kaydı</a>
+      </div>
+      <div class="footer-link" style="margin-top:8px">
+        <span>Öğrenci misin? </span>
+        <a routerLink="/login">Öğrenci Girişi</a>
+      </div>
+    </form>
+  </div>
+</div>

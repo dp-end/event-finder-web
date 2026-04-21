@@ -1,0 +1,50 @@
+<div class="register-container">
+  <div class="register-card">
+
+    <div class="header-section">
+      <button class="back-btn" routerLink="/login">←</button>
+      <div class="title-group">
+        <h2>Aramıza Katıl</h2>
+        <p>Nasıl kayıt olmak istersin?</p>
+      </div>
+    </div>
+
+    <div class="selection-grid">
+      <div class="selection-item" (click)="selectRole('Öğrenci')">
+        <div class="icon-box student-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </div>
+        <div class="info">
+          <h3>Öğrenci Kaydı</h3>
+          <p>Etkinlikleri keşfet ve katıl</p>
+        </div>
+        <div class="arrow">→</div>
+      </div>
+
+      <div class="selection-item" (click)="selectRole('Kulüp')">
+        <div class="icon-box club-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+        </div>
+        <div class="info">
+          <h3>Topluluk Kaydı</h3>
+          <p>Etkinlik oluştur ve yönet</p>
+        </div>
+        <div class="arrow">→</div>
+      </div>
+    </div>
+
+    <div class="footer-link">
+      <span>Zaten bir hesabın var mı? </span>
+      <a routerLink="/login">Giriş Yap</a>
+    </div>
+
+  </div>
+</div>
