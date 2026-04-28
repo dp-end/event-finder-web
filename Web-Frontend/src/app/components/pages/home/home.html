@@ -31,12 +31,15 @@
   <!-- KATEGORİ ÇUBUĞU -->
   <div class="category-bar">
     <button class="category-chip" [class.active]="activeCategory === 'Tümü'" (click)="selectCategory('Tümü')">
-      Tümü
+      <span class="chip-icon">🎯</span> Tümü
     </button>
     @for (cat of categories; track cat.id) {
       <button class="category-chip"
               [class.active]="activeCategory === cat.name"
               (click)="selectCategory(cat.name)">
+        @if (cat.iconName) {
+          <span class="chip-icon">{{ cat.iconName }}</span>
+        }
         {{ cat.name }}
       </button>
     }

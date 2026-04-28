@@ -15,6 +15,8 @@ export class Login {
   loginForm: FormGroup;
   errorMessage = '';
   isLoading = false;
+  selectedType: 'student' | 'club' = 'student';
+  showPassword = false;
 
   constructor(
     private fb: FormBuilder,
@@ -22,13 +24,18 @@ export class Login {
     private authService: AuthService
   ) {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [
-        Validators.required,
-        Validators.minLength(8),
-        Validators.pattern(/^(?=.*[A-Z])(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).+$/)
-      ]]
+      email:    ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]]
     });
+  }
+
+  selectType(type: 'student' | 'club') {
+    this.selectedType = type;
+    this.errorMessage = '';
+  }
+
+  togglePassword() {
+    this.showPassword = !this.showPassword;
   }
 
   onSubmit(): void {
@@ -39,14 +46,18 @@ export class Login {
     }
 
     this.isLoading = true;
-    this.authService.login(this.loginForm.value, 'student').subscribe({
+    this.authService.login(this.loginForm.value, this.selectedType).subscribe({
       next: () => {
         this.isLoading = false;
         this.router.navigate(['/home']);
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessage = err.error?.message || err.error?.Message || 'E-posta veya şifre hatalı.';
+        this.errorMessage =
+          err.error?.message ||
+          err.error?.Message ||
+          err.message ||
+          'E-posta veya şifre hatalı.';
       }
     });
   }

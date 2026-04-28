@@ -1,10 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
 
 :host {
-  /* Daha canlı ve enerjik renk geçişleri */
-  --primary-gradient: linear-gradient(135deg, rgba(102, 126, 234, 0.7) 0%, rgba(118, 75, 162, 0.7) 100%);
-  --accent-color: #667eea;
-  --input-focus: rgba(102, 126, 234, 0.25);
+  --accent: #1D4ED8;
+  --accent-dark: #1e40af;
+  --input-focus: rgba(29, 78, 216, 0.18);
 }
 
 .login-container {
@@ -16,42 +15,41 @@
   font-family: 'Plus Jakarta Sans', sans-serif;
   padding: 20px;
   overflow: hidden;
-
-  /* CANLI ÜNİVERSİTE FESTİVALİ VE KONSER ARKA PLANI */
-  /* Bu görsel, renkli ışıklar ve eğlenen gençlerle tam bir etkinlik havası verir */
-  background-image: url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+  background-image: url('https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
 }
 
-/* Arka plan üzerine renkli ve hareketli bir katman (Biraz daha şeffaf bıraktık) */
 .login-container::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--primary-gradient);
+  inset: 0;
+  background: linear-gradient(135deg, rgba(29, 78, 216, 0.72) 0%, rgba(30, 64, 175, 0.82) 100%);
   z-index: 1;
 }
 
 .login-card {
   position: relative;
-  z-index: 2; /* Arka planın üstünde kalması için */
-  background: rgba(255, 255, 255, 0.85); /* Formun net okunması için hafif opak */
-  backdrop-filter: blur(20px); /* Arka plandaki görseli daha fazla bulanıklaştırır */
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   padding: 2.8rem;
   border-radius: 28px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
   width: 100%;
   max-width: 420px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.header-section {
+  text-align: center;
+  margin-bottom: 2rem;
 }
 
 .logo-wrapper {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--accent);
   color: white;
   width: 65px;
   height: 65px;
@@ -60,7 +58,7 @@
   align-items: center;
   justify-content: center;
   margin: 0 auto 1.2rem;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 24px rgba(29, 78, 216, 0.35);
 }
 
 .title-group h2 {
@@ -77,12 +75,22 @@
   font-size: 0.95rem;
 }
 
-/* Form elemanları bir öncekiyle uyumlu devam ediyor */
-.form-group { margin-bottom: 1.5rem; text-align: left; }
+.form-group {
+  margin-bottom: 1.4rem;
+  text-align: left;
+}
 
-.label-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
 
-.form-group label { font-weight: 600; font-size: 0.85rem; color: #2d3748; }
+.form-group label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #2d3748;
+}
 
 input {
   width: 100%;
@@ -93,18 +101,20 @@ input {
   font-size: 1rem;
   transition: all 0.3s ease;
   box-sizing: border-box;
+  font-family: inherit;
+  color: #1a202c;
 }
 
 input:focus {
   outline: none;
-  border-color: var(--accent-color);
+  border-color: var(--accent);
   box-shadow: 0 0 0 4px var(--input-focus);
 }
 
 .submit-btn {
   width: 100%;
   padding: 16px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--accent);
   color: white;
   border: none;
   border-radius: 14px;
@@ -113,25 +123,40 @@ input:focus {
   cursor: pointer;
   margin-top: 1rem;
   transition: all 0.3s ease;
-  box-shadow: 0 10px 15px -3px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 10px 20px rgba(29, 78, 216, 0.3);
+  font-family: inherit;
 }
 
 .submit-btn:hover:not(:disabled) {
+  background: var(--accent-dark);
   transform: translateY(-2px);
-  filter: brightness(1.1);
-  box-shadow: 0 15px 25px -5px rgba(102, 126, 234, 0.5);
+  box-shadow: 0 14px 28px rgba(29, 78, 216, 0.4);
+}
+
+.submit-btn:disabled {
+  background: #a0aec0;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .footer-link {
-  margin-top: 2rem;
+  margin-top: 1.6rem;
   font-size: 0.9rem;
   color: #4a5568;
+  text-align: center;
 }
 
 .footer-link a {
-  color: #667eea;
+  color: var(--accent);
   font-weight: 700;
   text-decoration: none;
 }
+.footer-link a:hover { color: var(--accent-dark); }
 
-.error-msg { color: #e53e3e; font-size: 0.8rem; margin-top: 5px; display: block; }
+.error-msg {
+  color: #e53e3e;
+  font-size: 0.8rem;
+  margin-top: 5px;
+  display: block;
+}

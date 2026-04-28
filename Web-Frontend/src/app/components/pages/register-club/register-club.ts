@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../../services/auth';
 
@@ -13,15 +13,21 @@ import { AuthService } from '../../../services/auth';
 })
 export class RegisterClub {
   clubForm: FormGroup;
-  showPassword = false;
-  isSubmitting = false;
+  isLoading = false;
   errorMessage = '';
   successMessage = '';
+  showPassword = false;
+  showConfirm = false;
 
   universities = [
-    'Akdeniz Üniversitesi', 'İstanbul Teknik Üniversitesi',
-    'ODTÜ', 'Boğaziçi Üniversitesi', 'Hacettepe Üniversitesi',
-    'Ege Üniversitesi', 'Ankara Üniversitesi'
+    'Akdeniz Üniversitesi',
+    'İstanbul Teknik Üniversitesi',
+    'ODTÜ',
+    'Boğaziçi Üniversitesi',
+    'Hacettepe Üniversitesi',
+    'Ege Üniversitesi',
+    'Ankara Üniversitesi',
+    'Diğer',
   ];
 
   constructor(
@@ -29,63 +35,81 @@ export class RegisterClub {
     private router: Router,
     private authService: AuthService
   ) {
-    this.clubForm = this.fb.group({
-      clubName: ['', [Validators.required, Validators.minLength(3)]],
-      clubEmail: ['', [Validators.required, Validators.email]],
-      advisorName: ['', Validators.required],
-      phoneNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{10,11}$/)]],
-      referenceNumber: ['', Validators.required],
-      university: ['', Validators.required],
-      password: ['', [
-        Validators.required,
-        Validators.minLength(8),
-        Validators.pattern(/^(?=.*[A-Z])(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).+$/)
-      ]]
-    });
+    this.clubForm = this.fb.group(
+      {
+        clubName:        ['', [Validators.required, Validators.minLength(2)]],
+        userName:        ['', [Validators.required, Validators.minLength(3)]],
+        clubEmail:       ['', [Validators.required, Validators.email]],
+        advisorName:     [''],
+        phoneNumber:     [''],
+        referenceNumber: [''],
+        university:      [''],
+        password:        ['', [Validators.required, Validators.minLength(6)]],
+        confirmPassword: ['', Validators.required],
+      },
+      { validators: this.passwordMatchValidator }
+    );
   }
 
-  togglePassword(): void {
-    this.showPassword = !this.showPassword;
+  passwordMatchValidator(control: AbstractControl) {
+    const pw = control.get('password')?.value;
+    const cp = control.get('confirmPassword')?.value;
+    if (pw !== cp) {
+      control.get('confirmPassword')?.setErrors({ mismatch: true });
+      return { mismatch: true };
+    }
+    return null;
   }
+
+  togglePassword() { this.showPassword = !this.showPassword; }
+  toggleConfirm()  { this.showConfirm  = !this.showConfirm;  }
 
   onSubmit(): void {
-    if (this.clubForm.invalid || this.isSubmitting) return;
+    if (this.clubForm.invalid || this.isLoading) return;
 
-    this.isSubmitting = true;
+    this.isLoading = true;
     this.errorMessage = '';
     this.successMessage = '';
 
     const v = this.clubForm.value;
 
     const payload = {
-      firstName: v.clubName,
-      lastName: '',
-      email: v.clubEmail,
-      userName: v.clubEmail.split('@')[0],
-      password: v.password,
-      confirmPassword: v.password,
-      userType: 'club',
-      clubName: v.clubName,
-      advisorName: v.advisorName,
-      phoneNumber: v.phoneNumber,
-      referenceNumber: v.referenceNumber,
-      university: v.university,
+      firstName:       v.clubName,
+      lastName:        '',
+      email:           v.clubEmail,
+      userName:        v.userName,
+      password:        v.password,
+      confirmPassword: v.confirmPassword,
+      userType:        'club',
+      clubName:        v.clubName,
+      advisorName:     v.advisorName  || '',
+      phoneNumber:     v.phoneNumber  || '',
+      referenceNumber: v.referenceNumber || '',
+      university:      v.university   || '',
     };
 
     this.authService.register(payload).subscribe({
       next: () => {
-        this.successMessage = 'Kulüp kaydınız başarıyla oluşturuldu! Giriş yapabilirsiniz.';
-        this.isSubmitting = false;
-        setTimeout(() => this.router.navigate(['/login-club']), 2000);
+        this.isLoading = false;
+        this.successMessage = 'Kulüp kaydı başarılı! Giriş yapabilirsiniz.';
+        setTimeout(() => this.router.navigate(['/login']), 2000);
       },
       error: (err) => {
-        this.errorMessage = err.error?.message || err.error?.Message || 'Kayıt sırasında bir hata oluştu.';
-        this.isSubmitting = false;
+        this.isLoading = false;
+        let msg = 'Kayıt sırasında bir hata oluştu.';
+        if (typeof err.error === 'string' && err.error.length > 0) {
+          try { msg = JSON.parse(err.error)?.Message || err.error; } catch { msg = err.error; }
+        } else if (err.error?.message) {
+          msg = err.error.message;
+        } else if (err.error?.Message) {
+          msg = err.error.Message;
+        } else if (err.error?.errors) {
+          msg = Object.values(err.error.errors).flat().join(' ');
+        }
+        this.errorMessage = msg;
       }
     });
   }
 
-  goBack(): void {
-    window.history.back();
-  }
+  goBack(): void { window.history.back(); }
 }

@@ -128,7 +128,7 @@
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-input:checked + .slider { background-color: #007bff; }
+input:checked + .slider { background-color: #1D4ED8; }
 input:checked + .slider:before { transform: translateX(22px); }
 
 /* Dil Seçici (Select Dropdown) */

@@ -1,51 +1,137 @@
 <div class="register-container">
   <div class="register-card">
+
     <div class="header-section">
-      <button class="back-btn" (click)="goBack()" type="button">←</button>
+      <button class="back-btn" (click)="goBack()" type="button">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </button>
       <div class="title-group">
         <h2>Topluluk Kaydı</h2>
         <p>Kulüp bilgilerini girin</p>
       </div>
     </div>
 
+    @if (errorMessage) {
+      <div class="alert error">{{ errorMessage }}</div>
+    }
+    @if (successMessage) {
+      <div class="alert success">{{ successMessage }}</div>
+    }
+
     <form [formGroup]="clubForm" (ngSubmit)="onSubmit()">
+
       <div class="form-group">
-        <label>Kulüp Adı</label>
+        <label>Kulüp Adı <span class="req">*</span></label>
         <input type="text" formControlName="clubName" placeholder="Kulübünüzün tam adı">
+        @if (clubForm.get('clubName')?.invalid && clubForm.get('clubName')?.touched) {
+          <small class="error-msg">Kulüp adı zorunludur.</small>
+        }
       </div>
 
       <div class="form-group">
-        <label>Kulüp E-postası</label>
+        <label>Kullanıcı Adı <span class="req">*</span></label>
+        <input type="text" formControlName="userName" placeholder="Giriş için kullanılacak kullanıcı adı">
+        @if (clubForm.get('userName')?.invalid && clubForm.get('userName')?.touched) {
+          @if (clubForm.get('userName')?.errors?.['required']) {
+            <small class="error-msg">Kullanıcı adı zorunludur.</small>
+          }
+          @if (clubForm.get('userName')?.errors?.['minlength']) {
+            <small class="error-msg">En az 3 karakter olmalı.</small>
+          }
+        }
+      </div>
+
+      <div class="form-group">
+        <label>Kulüp E-postası <span class="req">*</span></label>
         <input type="email" formControlName="clubEmail" placeholder="kulup@universite.edu.tr">
+        @if (clubForm.get('clubEmail')?.invalid && clubForm.get('clubEmail')?.touched) {
+          @if (clubForm.get('clubEmail')?.errors?.['required']) {
+            <small class="error-msg">E-posta zorunludur.</small>
+          }
+          @if (clubForm.get('clubEmail')?.errors?.['email']) {
+            <small class="error-msg">Geçerli bir e-posta girin.</small>
+          }
+        }
       </div>
 
       <div class="form-row">
         <div class="form-group half-width">
           <label>Danışman Hoca</label>
-          <input type="text" formControlName="advisorName" placeholder="Ad Soyad">
+          <input type="text" formControlName="advisorName" placeholder="Ad Soyad (opsiyonel)">
         </div>
         <div class="form-group half-width">
           <label>Kulüp Telefonu</label>
-          <input type="tel" formControlName="phoneNumber" placeholder="05XX...">
+          <input type="tel" formControlName="phoneNumber" placeholder="05XX... (opsiyonel)">
         </div>
       </div>
 
       <div class="form-group">
         <label>Referans Numarası</label>
-        <input type="text" formControlName="referenceNumber" placeholder="REF-XXXXX">
+        <input type="text" formControlName="referenceNumber" placeholder="REF-XXXXX (opsiyonel)">
       </div>
 
       <div class="form-group">
         <label>Üniversite</label>
-        <input type="text" formControlName="university" placeholder="Bağlı olduğunuz üniversite">
+        <select formControlName="university">
+          <option value="">Üniversite Seçin (Opsiyonel)</option>
+          @for (uni of universities; track uni) {
+            <option [value]="uni">{{ uni }}</option>
+          }
+        </select>
       </div>
 
       <div class="form-group">
-        <label>Şifre</label>
-        <input type="password" formControlName="password" placeholder="En az 8 karakter">
+        <label>Şifre <span class="req">*</span></label>
+        <div class="password-wrapper">
+          <input [type]="showPassword ? 'text' : 'password'"
+                 formControlName="password" placeholder="En az 6 karakter">
+          <button type="button" class="eye-btn" (click)="togglePassword()" tabindex="-1">
+            @if (showPassword) {
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            } @else {
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            }
+          </button>
+        </div>
+        @if (clubForm.get('password')?.invalid && clubForm.get('password')?.touched) {
+          @if (clubForm.get('password')?.errors?.['required']) {
+            <small class="error-msg">Şifre zorunludur.</small>
+          }
+          @if (clubForm.get('password')?.errors?.['minlength']) {
+            <small class="error-msg">Şifre en az 6 karakter olmalıdır.</small>
+          }
+        }
       </div>
 
-      <button type="submit" class="submit-btn" [disabled]="clubForm.invalid">Kayıt Ol</button>
+      <div class="form-group">
+        <label>Şifre Tekrar <span class="req">*</span></label>
+        <div class="password-wrapper">
+          <input [type]="showConfirm ? 'text' : 'password'"
+                 formControlName="confirmPassword" placeholder="Şifrenizi tekrar girin">
+          <button type="button" class="eye-btn" (click)="toggleConfirm()" tabindex="-1">
+            @if (showConfirm) {
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            } @else {
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            }
+          </button>
+        </div>
+        @if (clubForm.get('confirmPassword')?.touched && clubForm.get('confirmPassword')?.errors?.['mismatch']) {
+          <small class="error-msg">Şifreler eşleşmiyor!</small>
+        }
+      </div>
+
+      <button type="submit" class="submit-btn" [disabled]="clubForm.invalid || isLoading">
+        @if (isLoading) {
+          <div class="mini-spinner"></div>
+          Kayıt yapılıyor...
+        } @else {
+          Kulüp Olarak Kayıt Ol
+        }
+      </button>
 
       <div class="footer-link">
         <span>Topluluk hesabınız var mı? </span>

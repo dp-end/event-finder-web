@@ -2,64 +2,133 @@
   <div class="register-card">
 
     <div class="header-section">
-      <button class="back-btn" (click)="goBack()">
-        <i class="arrow-left">←</i>
+      <button class="back-btn" (click)="goBack()" type="button">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
       </button>
       <div class="title-group">
         <h2>Öğrenci Kaydı</h2>
         <p>Aramıza katıl ve etkinlikleri keşfet</p>
       </div>
     </div>
-     <div *ngIf="errorMessage" class="error-container global-error" style="background-color: #ffe6e6; color: #d8000c; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center; font-size: 14px; border: 1px solid #ffcccc;">
-      {{ errorMessage }}
-    </div>
-    <div *ngIf="successMessage" class="success-container" style="background-color: #dff0d8; color: #3c763d; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center; font-size: 14px; border: 1px solid #d6e9c6;">
-      {{ successMessage }}
-    </div>
+
+    @if (errorMessage) {
+      <div class="alert error">{{ errorMessage }}</div>
+    }
+    @if (successMessage) {
+      <div class="alert success">{{ successMessage }}</div>
+    }
 
     <form [formGroup]="studentForm" (ngSubmit)="onSubmit()">
 
       <div class="form-row">
         <div class="form-group half-width">
-          <label>Ad</label>
+          <label>Ad <span class="req">*</span></label>
           <input type="text" formControlName="firstName" placeholder="Adınız">
+          @if (studentForm.get('firstName')?.invalid && studentForm.get('firstName')?.touched) {
+            <small class="error-msg">Ad zorunludur.</small>
+          }
         </div>
         <div class="form-group half-width">
-          <label>Soyad</label>
+          <label>Soyad <span class="req">*</span></label>
           <input type="text" formControlName="lastName" placeholder="Soyadınız">
+          @if (studentForm.get('lastName')?.invalid && studentForm.get('lastName')?.touched) {
+            <small class="error-msg">Soyad zorunludur.</small>
+          }
         </div>
+      </div>
+
+      <div class="form-group">
+        <label>Kullanıcı Adı <span class="req">*</span></label>
+        <input type="text" formControlName="userName" placeholder="kullanici_adi">
+        @if (studentForm.get('userName')?.invalid && studentForm.get('userName')?.touched) {
+          @if (studentForm.get('userName')?.errors?.['required']) {
+            <small class="error-msg">Kullanıcı adı zorunludur.</small>
+          }
+          @if (studentForm.get('userName')?.errors?.['minlength']) {
+            <small class="error-msg">En az 3 karakter olmalı.</small>
+          }
+        }
+      </div>
+
+      <div class="form-group">
+        <label>E-posta Adresi <span class="req">*</span></label>
+        <input type="email" formControlName="email" placeholder="ornek@edu.tr">
+        @if (studentForm.get('email')?.invalid && studentForm.get('email')?.touched) {
+          @if (studentForm.get('email')?.errors?.['required']) {
+            <small class="error-msg">E-posta zorunludur.</small>
+          }
+          @if (studentForm.get('email')?.errors?.['email']) {
+            <small class="error-msg">Geçerli bir e-posta girin.</small>
+          }
+        }
       </div>
 
       <div class="form-group">
         <label>Üniversite</label>
-        <input type="text" formControlName="university" placeholder="Üniversitenizi yazın">
+        <select formControlName="university">
+          <option value="">Üniversite Seçin (Opsiyonel)</option>
+          @for (uni of universities; track uni) {
+            <option [value]="uni">{{ uni }}</option>
+          }
+        </select>
       </div>
 
       <div class="form-group">
         <label>Bölüm</label>
-        <input type="text" formControlName="department" placeholder="Okuduğunuz bölüm">
+        <input type="text" formControlName="department" placeholder="Okuduğunuz bölüm (opsiyonel)">
       </div>
 
       <div class="form-group">
-        <label>E-posta Adresi</label>
-        <input type="email" formControlName="email" placeholder="ornek@edu.tr">
+        <label>Şifre <span class="req">*</span></label>
+        <div class="password-wrapper">
+          <input [type]="showPassword ? 'text' : 'password'"
+                 formControlName="password" placeholder="En az 6 karakter">
+          <button type="button" class="eye-btn" (click)="togglePassword()" tabindex="-1">
+            @if (showPassword) {
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            } @else {
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            }
+          </button>
+        </div>
+        @if (studentForm.get('password')?.invalid && studentForm.get('password')?.touched) {
+          @if (studentForm.get('password')?.errors?.['required']) {
+            <small class="error-msg">Şifre zorunludur.</small>
+          }
+          @if (studentForm.get('password')?.errors?.['minlength']) {
+            <small class="error-msg">Şifre en az 6 karakter olmalıdır.</small>
+          }
+        }
       </div>
 
       <div class="form-group">
-        <label>Şifre</label>
-        <input type="password" formControlName="password" placeholder="En az 8 karakter">
+        <label>Şifre Tekrar <span class="req">*</span></label>
+        <div class="password-wrapper">
+          <input [type]="showConfirm ? 'text' : 'password'"
+                 formControlName="confirmPassword" placeholder="Şifrenizi tekrar girin">
+          <button type="button" class="eye-btn" (click)="toggleConfirm()" tabindex="-1">
+            @if (showConfirm) {
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            } @else {
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            }
+          </button>
+        </div>
+        @if (studentForm.get('confirmPassword')?.touched && studentForm.get('confirmPassword')?.errors?.['mismatch']) {
+          <small class="error-msg">Şifreler eşleşmiyor!</small>
+        }
       </div>
 
-      <div class="form-group">
-        <label>Şifre Tekrar</label>
-        <input type="password" formControlName="confirmPassword" placeholder="Şifrenizi tekrar girin">
-        <small class="error-msg" *ngIf="studentForm.get('confirmPassword')?.hasError('mismatch') && studentForm.get('confirmPassword')?.touched">
-          Şifreler eşleşmiyor!
-        </small>
-      </div>
-
-      <button type="submit" class="submit-btn" [disabled]="studentForm.invalid">
-        Kaydı Tamamla
+      <button type="submit" class="submit-btn" [disabled]="studentForm.invalid || isLoading">
+        @if (isLoading) {
+          <div class="mini-spinner"></div>
+          Kayıt yapılıyor...
+        } @else {
+          Kaydı Tamamla
+        }
       </button>
 
       <div class="footer-link">

@@ -47,7 +47,7 @@
 }
 
 .category-badge {
-  background: #007bff;
+  background: #1D4ED8;
   padding: 6px 14px;
   border-radius: 20px;
   font-size: 0.85rem;
@@ -127,7 +127,7 @@
 
 .icon-box {
   width: 48px; height: 48px;
-  background: #eef6ff; color: #007bff;
+  background: #eef6ff; color: #1D4ED8;
   border-radius: 12px;
   display: flex; align-items: center; justify-content: center;
   font-size: 1.5rem;
@@ -174,15 +174,15 @@
 /* Kontenjan Barı */
 .quota-info { margin-bottom: 25px; }
 .quota-bar { height: 8px; background: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 8px; }
-.progress { height: 100%; background: #007bff; border-radius: 10px; }
+.progress { height: 100%; background: #1D4ED8; border-radius: 10px; }
 .quota-info p { margin: 0; font-size: 0.85rem; color: #718096; text-align: right; }
 
 .buy-btn {
-  width: 100%; padding: 16px; background: #007bff; color: white;
+  width: 100%; padding: 16px; background: #1D4ED8; color: white;
   border: none; border-radius: 14px; font-size: 1.1rem; font-weight: 700;
   cursor: pointer; transition: 0.2s; margin-bottom: 15px;
 }
-.buy-btn:hover { background: #0056b3; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,123,255,0.3); }
+.buy-btn:hover { background: #1e40af; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(29, 78, 216,0.3); }
 
 /* YENİ — loading/error sayfaları */
 .loading-page, .error-page {
@@ -197,7 +197,7 @@
 .spinner {
   width: 44px; height: 44px;
   border: 3px solid #edf2f7;
-  border-top-color: #007bff;
+  border-top-color: #1D4ED8;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -256,7 +256,7 @@
 .comments-section { margin-top: 40px; }
 .comments-section h3 { color: #1a202c; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
 .comment-badge {
-  background: #007bff; color: white;
+  background: #1D4ED8; color: white;
   padding: 3px 10px; border-radius: 20px; font-size: 0.8rem;
 }
 .comment-input-row { margin-bottom: 24px; }
@@ -266,10 +266,10 @@
   outline: none; transition: border-color 0.2s;
   font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box;
 }
-.comment-input-row textarea:focus { border-color: #007bff; }
+.comment-input-row textarea:focus { border-color: #1D4ED8; }
 .send-btn {
   margin-top: 8px; padding: 10px 28px;
-  background: #007bff; color: white; border: none;
+  background: #1D4ED8; color: white; border: none;
   border-radius: 10px; font-weight: 700; cursor: pointer;
   min-width: 90px; display: flex; align-items: center; justify-content: center;
 }
@@ -278,7 +278,7 @@
   background: #f7fafc; padding: 14px; border-radius: 12px;
   color: #718096; margin-bottom: 20px;
 }
-.login-prompt a { color: #007bff; font-weight: 700; text-decoration: none; }
+.login-prompt a { color: #1D4ED8; font-weight: 700; text-decoration: none; }
 .comment-item {
   display: flex; gap: 14px; margin-bottom: 20px;
   padding-bottom: 20px; border-bottom: 1px solid #f1f5f9;
@@ -304,7 +304,7 @@
 .comments-loading { display: flex; justify-content: center; padding: 20px; }
 .spinner-small {
   width: 28px; height: 28px;
-  border: 2px solid #edf2f7; border-top-color: #007bff;
+  border: 2px solid #edf2f7; border-top-color: #1D4ED8;
   border-radius: 50%; animation: spin 0.8s linear infinite;
 }
 

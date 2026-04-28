@@ -18,8 +18,8 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  login(credentials: LoginRequest, loginType: 'student' | 'club' = 'student'): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/authenticate`, { ...credentials, loginType }).pipe(
+  login(credentials: LoginRequest, userType: 'student' | 'club' = 'student'): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/authenticate`, { ...credentials, userType }).pipe(
       timeout(API_TIMEOUT),
       tap(response => this.storeSession(response))
     );

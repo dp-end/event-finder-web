@@ -16,6 +16,7 @@ export class App {
   // Sidebar gösterilmeyecek prefix'ler (auth sayfaları)
   private hiddenRoutes = [
     '/login',
+    '/forgot-password',
     '/register',
     '/register-student',
     '/register-club',

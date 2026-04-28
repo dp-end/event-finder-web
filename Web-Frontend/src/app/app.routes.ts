@@ -16,6 +16,8 @@ import { Profile } from './components/pages/profile/profile';
 import { Settings } from './components/pages/settings/settings';
 import { CreateEvent } from './components/pages/create-event/create-event';
 import { ClupDetails } from './components/pages/clup-details/clup-details';
+import { Clubs } from './components/pages/clubs/clubs';
+import { ForgotPassword } from './components/pages/forgot-password/forgot-password';
 
 export const routes: Routes = [
   // 1. UYGULAMA İLK AÇILDIĞINDA (Boş URL) -> Login'e yönlendir
@@ -24,6 +26,7 @@ export const routes: Routes = [
   // 2. SAYFALARIMIZIN ROTALARI
   { path: 'login', component: Login },
   { path: 'login-club', component: LoginClub },
+  { path: 'forgot-password', component: ForgotPassword },
   { path: 'register', component: RegisterSelection },
   { path: 'register-student', component: RegisterStudent },
   { path: 'register-club', component: RegisterClub },
@@ -36,6 +39,7 @@ export const routes: Routes = [
   { path: 'profile', component: Profile },
   { path: 'settings', component: Settings },
   { path: 'create-event', component: CreateEvent },
+  { path: 'clubs', component: Clubs },
   { path: 'club/:id', component: ClupDetails },
 
   // 4. YANLIŞ URL GİRİLİRSE (Catch-all) -> Güvenlik için Login'e atılır
