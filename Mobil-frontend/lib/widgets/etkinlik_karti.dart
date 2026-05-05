@@ -12,6 +12,7 @@ class EtkinlikKarti extends StatefulWidget {
   final String? etkinlikId;
   final String? clubId;
   final String? ownerId;
+  final String? organizerImageUrl;
   final int likeCount;
   final bool isLiked;
 
@@ -25,6 +26,7 @@ class EtkinlikKarti extends StatefulWidget {
     this.etkinlikId,
     this.clubId,
     this.ownerId,
+    this.organizerImageUrl,
     this.likeCount = 0,
     this.isLiked = false,
   });
@@ -123,7 +125,22 @@ class _EtkinlikKartiState extends State<EtkinlikKarti> {
                   children: [
                     InkWell(
                       onTap: _openOrganizer,
-                      child: Text(widget.kulup, style: TextStyle(fontSize: 10, color: Colors.blue[700], fontWeight: FontWeight.bold), maxLines: 1),
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 10,
+                            backgroundColor: const Color(0xFF1D4ED8).withValues(alpha: 0.1),
+                            backgroundImage: (widget.organizerImageUrl != null && widget.organizerImageUrl!.isNotEmpty)
+                                ? NetworkImage(AppConstants.resolveUrl(widget.organizerImageUrl!))
+                                : null,
+                            child: (widget.organizerImageUrl == null || widget.organizerImageUrl!.isEmpty)
+                                ? Text(_initials(widget.kulup), style: const TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: Color(0xFF1D4ED8)))
+                                : null,
+                          ),
+                          const SizedBox(width: 5),
+                          Expanded(child: Text(widget.kulup, style: TextStyle(fontSize: 10, color: Colors.blue[700], fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis)),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(widget.baslik, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, height: 1.1), maxLines: 2, overflow: TextOverflow.ellipsis),
@@ -195,5 +212,12 @@ class _EtkinlikKartiState extends State<EtkinlikKarti> {
       alignment: Alignment.center,
       child: const Icon(Icons.image_not_supported_outlined, color: Color(0xFF1D4ED8)),
     );
+  }
+
+  String _initials(String value) {
+    final parts = value.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
+    if (parts.isEmpty) return 'EF';
+    if (parts.length >= 2) return '${parts.first[0]}${parts.last[0]}'.toUpperCase();
+    return parts.first.substring(0, parts.first.length >= 2 ? 2 : 1).toUpperCase();
   }
 }

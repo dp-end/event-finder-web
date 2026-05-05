@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { SidebarComponent } from './components/sidebar/sidebar';
 import { CommonModule } from '@angular/common';
+import { PreferencesService } from './services/preferences.service';
 
 @Component({
   selector: 'app-root',
@@ -22,7 +23,10 @@ export class App {
     '/register-club',
   ];
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    private preferencesService: PreferencesService
+  ) {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         const url = event.urlAfterRedirects || event.url;

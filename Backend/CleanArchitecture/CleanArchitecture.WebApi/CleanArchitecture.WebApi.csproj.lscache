@@ -2,12 +2,10 @@ version=1
 
 # This file caches language service data to improve the performance of C# Dev Kit.
 # It is not intended for manual editing. It can safely be deleted and will be
-# regenerated automatically.
+# regenerated automatically. For more information, see https://aka.ms/lscache
 #
-# To exclude from version control, add *.lscache to your .gitignore file.
-#
-# To disable caching, add the following to your VS Code settings:
-#   "dotnet.projectsystem.enableLanguageServiceCache": false
+# To control where cache files are stored, use the following VS Code setting:
+#   "dotnet.projectsystem.cacheInProjectFolder": true
 
 [project]
 language=C#
@@ -67,6 +65,7 @@ Controllers/
  TicketsController.cs
 Extensions/
  AppExtensions.cs
+ ClaimsPrincipalExtensions.cs
  ServiceExtensions.cs
 Middlewares/ErrorHandlerMiddleware.cs
 Models/Metadata.cs
@@ -77,7 +76,10 @@ Program.cs
 Services/AuthenticatedUserService.cs
 
 [metadataReferences]
-../../../../../../../../Program Files/dotnet/packs/Microsoft.AspNetCore.App.Ref/8.0.25/ref/net8.0/
+../
+ CleanArchitecture.Application/obj/Debug/net8.0/ref/CleanArchitecture.Core.dll
+ CleanArchitecture.Infrastructure/obj/Debug/net8.0/ref/CleanArchitecture.Infrastructure.dll
+<DOTNET>/packs/Microsoft.AspNetCore.App.Ref/8.0.25/ref/net8.0/
  Microsoft.AspNetCore.Antiforgery.dll
  Microsoft.AspNetCore.Authentication.Abstractions.dll
  Microsoft.AspNetCore.Authentication.BearerToken.dll
@@ -212,7 +214,7 @@ Services/AuthenticatedUserService.cs
  System.IO.Pipelines.dll
  System.Security.Cryptography.Xml.dll
  System.Threading.RateLimiting.dll
-../../../../../../../../Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/8.0.25/ref/net8.0/
+<DOTNET>/packs/Microsoft.NETCore.App.Ref/8.0.25/ref/net8.0/
  Microsoft.CSharp.dll
  Microsoft.VisualBasic.Core.dll
  Microsoft.VisualBasic.dll
@@ -375,9 +377,6 @@ Services/AuthenticatedUserService.cs
  System.Xml.XPath.dll
  System.Xml.XPath.XDocument.dll
  WindowsBase.dll
-../
- CleanArchitecture.Application/obj/Debug/net8.0/ref/CleanArchitecture.Core.dll
- CleanArchitecture.Infrastructure/obj/Debug/net8.0/ref/CleanArchitecture.Infrastructure.dll
 <NUGET>/
  automapper/16.1.1/lib/net8.0/AutoMapper.dll
  azure.core/1.38.0/lib/net6.0/Azure.Core.dll
@@ -387,7 +386,7 @@ Services/AuthenticatedUserService.cs
  fluentvalidation.dependencyinjectionextensions/9.1.2/lib/netstandard2.0/FluentValidation.DependencyInjectionExtensions.dll
  fluentvalidation/9.1.2/lib/netstandard2.0/FluentValidation.dll
  humanizer.core/2.14.1/lib/net6.0/Humanizer.dll
- mailkit/2.8.0/lib/netstandard2.0/MailKit.dll
+ mailkit/4.16.0/lib/net8.0/MailKit.dll
  mediatr.contracts/2.0.1/lib/netstandard2.0/MediatR.Contracts.dll
  mediatr/12.4.1/lib/net6.0/MediatR.dll
  microsoft.aspnetcore.authentication.jwtbearer/8.0.14/lib/net8.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
@@ -441,7 +440,7 @@ Services/AuthenticatedUserService.cs
  microsoft.visualstudio.web.codegeneration/8.0.7/lib/net8.0/Microsoft.VisualStudio.Web.CodeGeneration.dll
  microsoft.visualstudio.web.codegenerators.mvc/8.0.7/lib/net8.0/Microsoft.VisualStudio.Web.CodeGenerators.Mvc.dll
  microsoft.win32.systemevents/7.0.0/lib/net7.0/Microsoft.Win32.SystemEvents.dll
- mimekit/4.15.1/lib/net8.0/MimeKit.dll
+ mimekit/4.16.0/lib/net8.0/MimeKit.dll
  mono.texttemplating/2.3.1/lib/netcoreapp3.1/Mono.TextTemplating.dll
  mysqlconnector/2.3.5/lib/net8.0/MySqlConnector.dll
  newtonsoft.json.bson/1.0.2/lib/netstandard2.0/Newtonsoft.Json.Bson.dll
@@ -492,25 +491,25 @@ Services/AuthenticatedUserService.cs
  system.windows.extensions/7.0.0/lib/net7.0/System.Windows.Extensions.dll
 
 [analyzerReferences]
-../../../../../../../../Program Files/dotnet/packs/Microsoft.AspNetCore.App.Ref/8.0.25/analyzers/dotnet/cs/
+<DOTNET>/packs/Microsoft.AspNetCore.App.Ref/8.0.25/analyzers/dotnet/cs/
  Microsoft.AspNetCore.App.Analyzers.dll
  Microsoft.AspNetCore.App.CodeFixes.dll
  Microsoft.AspNetCore.Components.Analyzers.dll
-../../../../../../../../Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/8.0.25/analyzers/dotnet/cs/
+<DOTNET>/packs/Microsoft.NETCore.App.Ref/8.0.25/analyzers/dotnet/cs/
  Microsoft.Interop.ComInterfaceGenerator.dll
  Microsoft.Interop.JavaScript.JSImportGenerator.dll
  Microsoft.Interop.LibraryImportGenerator.dll
  Microsoft.Interop.SourceGeneration.dll
  System.Text.Json.SourceGeneration.dll
  System.Text.RegularExpressions.Generator.dll
-../../../../../../../../Program Files/dotnet/sdk/10.0.200/Sdks/Microsoft.NET.Sdk.Razor/source-generators/
+<DOTNET>/sdk/10.0.200/Sdks/Microsoft.NET.Sdk.Razor/source-generators/
  Microsoft.AspNetCore.Razor.Utilities.Shared.dll
  Microsoft.CodeAnalysis.Razor.Compiler.dll
  Microsoft.Extensions.ObjectPool.dll
-../../../../../../../../Program Files/dotnet/sdk/10.0.200/Sdks/Microsoft.NET.Sdk.Web/analyzers/cs/
+<DOTNET>/sdk/10.0.200/Sdks/Microsoft.NET.Sdk.Web/analyzers/cs/
  Microsoft.AspNetCore.Analyzers.dll
  Microsoft.AspNetCore.Mvc.Analyzers.dll
-../../../../../../../../Program Files/dotnet/sdk/10.0.200/Sdks/Microsoft.NET.Sdk/analyzers/
+<DOTNET>/sdk/10.0.200/Sdks/Microsoft.NET.Sdk/analyzers/
  Microsoft.CodeAnalysis.CSharp.NetAnalyzers.dll
  Microsoft.CodeAnalysis.NetAnalyzers.dll
 <NUGET>/microsoft.codeanalysis.analyzers/3.3.4/analyzers/dotnet/cs/
@@ -522,5 +521,5 @@ Services/AuthenticatedUserService.cs
  microsoft.extensions.options/10.0.0/analyzers/dotnet/roslyn4.4/cs/Microsoft.Extensions.Options.SourceGeneration.dll
 
 [analyzerConfigFiles]
-../../../../../../../../Program Files/dotnet/sdk/10.0.200/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_8_default.globalconfig
+<DOTNET>/sdk/10.0.200/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_8_default.globalconfig
 obj/Debug/net8.0/CleanArchitecture.WebApi.GeneratedMSBuildEditorConfig.editorconfig

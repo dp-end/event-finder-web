@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap, timeout } from 'rxjs';
-import { AuthResponse, LoginRequest, RegisterStudentRequest, RegisterClubRequest } from '../models/models';
+import {
+  AuthResponse, LoginRequest, RegisterStudentRequest, RegisterClubRequest,
+  ProfileDto, UpdateProfileRequest, ChangePasswordRequest, ResetPasswordRequest
+} from '../models/models';
 import { environment } from '../../environments/environment';
 
 const API_TIMEOUT = 10_000;
@@ -53,6 +56,43 @@ export class AuthService {
     );
   }
 
+  resetPassword(data: ResetPasswordRequest): Observable<string> {
+    return this.http.post(`${this.apiUrl}/reset-password`, data, { responseType: 'text' }).pipe(
+      timeout(API_TIMEOUT)
+    );
+  }
+
+  // GET /api/Account/me — kendi profilini çek
+  getMe(): Observable<ProfileDto> {
+    return this.http.get<ProfileDto>(`${this.apiUrl}/me`).pipe(timeout(API_TIMEOUT));
+  }
+
+  // GET /api/Account/public/{userId} — başka kullanıcının public profilini çek
+  getPublicProfile(userId: string): Observable<ProfileDto> {
+    return this.http.get<ProfileDto>(`${this.apiUrl}/public/${userId}`).pipe(timeout(API_TIMEOUT));
+  }
+
+  // PUT /api/Account/profile — profil güncelle
+  updateProfile(data: UpdateProfileRequest): Observable<ProfileDto> {
+    return this.http.put<ProfileDto>(`${this.apiUrl}/profile`, data).pipe(
+      timeout(API_TIMEOUT),
+      tap(profile => this.syncStoredUserFromProfile(profile))
+    );
+  }
+
+  // POST /api/Account/change-password — şifre değiştir
+  changePassword(data: ChangePasswordRequest): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.apiUrl}/change-password`, data).pipe(timeout(API_TIMEOUT));
+  }
+
+  // GET /api/Account/confirm-email?userId=&code=
+  confirmEmail(userId: string, code: string): Observable<string> {
+    return this.http.get(`${this.apiUrl}/confirm-email`, {
+      params: { userId, code },
+      responseType: 'text'
+    }).pipe(timeout(API_TIMEOUT));
+  }
+
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -64,9 +104,34 @@ export class AuthService {
   getToken(): string | null   { return this.tokenSubject.value; }
   getCurrentUser(): AuthResponse | null { return this.userSubject.value; }
   getCurrentUserName(): string | null   { return this.getCurrentUser()?.userName ?? localStorage.getItem('userName') ?? null; }
+  getCurrentProfileSnapshot(): ProfileDto | null {
+    const user = this.getCurrentUser();
+    if (!user) return null;
+
+    const isClub = user.userType === 'club' || user.roles?.includes('Club') === true;
+    return {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      userName: user.userName,
+      university: undefined,
+      department: undefined,
+      profileImageUrl: user.profileImageUrl,
+      userType: isClub ? 'club' : user.userType,
+      clubId: user.clubId,
+      clubName: isClub ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.userName : undefined,
+      clubDescription: undefined,
+      clubCoverImageUrl: undefined,
+      clubInstagramHandle: undefined,
+      ticketCount: 0,
+      followingClubCount: 0,
+      createdEventCount: 0,
+      clubFollowerCount: 0
+    };
+  }
   isLoggedIn(): boolean  { return !!this.getToken(); }
   isClubUser(): boolean  { const u = this.getCurrentUser(); return u?.userType === 'club' || u?.roles?.includes('Club') === true; }
-  isAdmin(): boolean     { const u = this.getCurrentUser(); return u?.roles?.includes('SuperAdmin') === true || u?.roles?.includes('Admin') === true; }
 
   // Eski uyumluluk
   setToken(token: string): void    { localStorage.setItem('token', token); this.tokenSubject.next(token); }
@@ -85,5 +150,26 @@ export class AuthService {
     const stored = localStorage.getItem('user');
     if (!stored) return null;
     try { return JSON.parse(stored) as AuthResponse; } catch { return null; }
+  }
+
+  private syncStoredUserFromProfile(profile: ProfileDto): void {
+    const current = this.getCurrentUser();
+    if (!current) return;
+
+    const next: AuthResponse = {
+      ...current,
+      id: profile.id,
+      firstName: profile.userType === 'club' ? (profile.clubName ?? profile.firstName) : profile.firstName,
+      lastName: profile.userType === 'club' ? '' : profile.lastName,
+      userName: profile.userName,
+      email: profile.email ?? current.email,
+      profileImageUrl: profile.profileImageUrl ?? current.profileImageUrl,
+      userType: profile.userType,
+      clubId: profile.clubId ?? current.clubId
+    };
+
+    localStorage.setItem('user', JSON.stringify(next));
+    localStorage.setItem('userName', next.userName);
+    this.userSubject.next(next);
   }
 }

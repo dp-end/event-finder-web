@@ -2,7 +2,12 @@
   <div class="register-card">
 
     <div class="header-section">
-      <button class="back-btn" routerLink="/login">←</button>
+      <button class="back-btn" routerLink="/login" type="button" aria-label="Geri dön">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </button>
       <div class="title-group">
         <h2>Aramıza Katıl</h2>
         <p>Nasıl kayıt olmak istersin?</p>
@@ -21,7 +26,11 @@
           <h3>Öğrenci Kaydı</h3>
           <p>Etkinlikleri keşfet ve katıl</p>
         </div>
-        <div class="arrow">→</div>
+        <div class="arrow" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </div>
       </div>
 
       <div class="selection-item" (click)="selectRole('Kulüp')">
@@ -37,7 +46,11 @@
           <h3>Topluluk Kaydı</h3>
           <p>Etkinlik oluştur ve yönet</p>
         </div>
-        <div class="arrow">→</div>
+        <div class="arrow" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </div>
       </div>
     </div>
 

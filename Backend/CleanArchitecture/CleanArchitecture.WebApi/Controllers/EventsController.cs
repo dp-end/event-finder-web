@@ -111,29 +111,14 @@ namespace CleanArchitecture.WebApi.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Basic,Club,Admin,SuperAdmin")]
+        [Authorize(Roles = "Student,Club")]
         public async Task<IActionResult> Create([FromBody] CreateEventDto dto)
         {
             var ownerId = User.FindUserId();
             if (string.IsNullOrWhiteSpace(ownerId)) return Unauthorized();
 
-            var resolvedClubId = dto.ClubId;
-            if (resolvedClubId == null && ownerId != null)
-            {
-                var adminClub = _context.Clubs.FirstOrDefault(c => c.Id == ownerId || c.AdminUserId == ownerId);
-                resolvedClubId = adminClub?.Id;
-            }
-
             var ownedClub = _context.Clubs.FirstOrDefault(c => c.Id == ownerId || c.AdminUserId == ownerId);
-            var isAdmin = User.IsInRole("Admin") || User.IsInRole("SuperAdmin");
-            if (ownedClub != null)
-            {
-                resolvedClubId = ownedClub.Id;
-            }
-            else if (!isAdmin)
-            {
-                resolvedClubId = null;
-            }
+            var resolvedClubId = ownedClub?.Id;
 
             var entity = new Event
             {
@@ -157,7 +142,7 @@ namespace CleanArchitecture.WebApi.Controllers
         }
 
         [HttpPost("upload-image")]
-        [Authorize(Roles = "Basic,Club,Admin,SuperAdmin")]
+        [Authorize(Roles = "Student,Club")]
         public async Task<IActionResult> UploadImage([FromForm] IFormFile file)
         {
             if (file == null || file.Length == 0)
@@ -196,9 +181,8 @@ namespace CleanArchitecture.WebApi.Controllers
             if (!await _eventRepo.ExistsAsync(id)) return NotFound();
             var existing = await _context.Events.FindAsync(id);
             var userId = User.FindUserId();
-            var isAdmin = User.IsInRole("Admin") || User.IsInRole("SuperAdmin");
             if (existing == null) return NotFound();
-            if (!isAdmin && existing.OwnerId != userId) return Forbid();
+            if (existing.OwnerId != userId) return Forbid();
 
             var soldCount = _context.Tickets.Count(t => t.EventId == id);
             if (dto.Quota < soldCount)
@@ -231,14 +215,9 @@ namespace CleanArchitecture.WebApi.Controllers
             if (!await _eventRepo.ExistsAsync(id)) return NotFound();
 
             var userId = User.FindUserId();
-            var isAdmin = User.IsInRole("Admin") || User.IsInRole("SuperAdmin");
-
-            if (!isAdmin)
-            {
-                var existing = await _context.Events.FindAsync(id);
-                if (existing == null) return NotFound();
-                if (existing.OwnerId != userId) return Forbid();
-            }
+            var existing = await _context.Events.FindAsync(id);
+            if (existing == null) return NotFound();
+            if (existing.OwnerId != userId) return Forbid();
 
             await _eventRepo.DeleteAsync(id);
             return NoContent();

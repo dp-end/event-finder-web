@@ -61,6 +61,7 @@ namespace CleanArchitecture.Infrastructure.Repositories
                 Initials = c.Initials,
                 Category = c.Category,
                 Description = c.Description,
+                ProfileImageUrl = c.ProfileImageUrl,
                 CoverImageUrl = c.CoverImageUrl,
                 InstagramHandle = c.InstagramHandle,
                 FollowerCount = c.Followers?.Count ?? 0,
@@ -138,6 +139,8 @@ namespace CleanArchitecture.Infrastructure.Repositories
                 Initials = c.Initials,
                 Category = c.Category,
                 Description = c.Description,
+                ProfileImageUrl = c.ProfileImageUrl,
+                CoverImageUrl = c.CoverImageUrl,
                 FollowerCount = c.Followers?.Count ?? 0,
                 EventCount = c.Events?.Count(e => e.IsActive) ?? 0,
                 IsFollowedByCurrentUser = currentUserId != null && (c.Followers?.Any(f => f.ApplicationUserId == currentUserId) ?? false)

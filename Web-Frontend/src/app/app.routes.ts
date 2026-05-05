@@ -36,6 +36,7 @@ export const routes: Routes = [
   // 3. YENİ SİDEBAR ROTALARI
   { path: 'notifications', component: Notifications },
   { path: 'tickets', component: Tickets },
+  { path: 'profile/:id', component: Profile },
   { path: 'profile', component: Profile },
   { path: 'settings', component: Settings },
   { path: 'create-event', component: CreateEvent },

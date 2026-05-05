@@ -63,16 +63,21 @@ class _BildirimlerEkraniState extends State<BildirimlerEkrani> {
     }
 
     if (!mounted) return;
-    final type = notification['type']?.toString() ?? '';
+    final rawType = notification['type'];
+    final type = rawType?.toString() ?? '';
+    final typeNumber = rawType is num ? rawType.toInt() : int.tryParse(type);
     final relatedEntityId = notification['relatedEntityId']?.toString();
     final eventId = notification['relatedEventId']?.toString();
     final clubId = notification['relatedClubId']?.toString();
+    final isClubFollow = type == 'ClubFollowed' || typeNumber == 7;
+    final isEventNotification = ['NewEvent', 'TicketPurchased', 'EventReminder', 'EventCancelled', 'ClubNewEvent', 'EventCommented', 'EventLiked'].contains(type)
+        || {1, 2, 3, 4, 5, 8, 9}.contains(typeNumber);
 
-    if (type == 'ClubFollowed' && relatedEntityId != null && relatedEntityId.isNotEmpty) {
+    if (isClubFollow && relatedEntityId != null && relatedEntityId.isNotEmpty) {
       Navigator.pushNamed(context, '/club-profile', arguments: {'clubId': relatedEntityId});
     } else if (relatedEntityId != null &&
         relatedEntityId.isNotEmpty &&
-        (type == 'EventCommented' || type == 'EventLiked' || type == 'TicketPurchased')) {
+        isEventNotification) {
       Navigator.pushNamed(context, '/event-detail', arguments: {'etkinlikId': relatedEntityId});
     } else if (eventId != null && eventId.isNotEmpty) {
       Navigator.pushNamed(context, '/event-detail', arguments: {'etkinlikId': eventId});

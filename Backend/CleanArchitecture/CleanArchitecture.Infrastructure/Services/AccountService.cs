@@ -74,6 +74,7 @@ namespace CleanArchitecture.Infrastructure.Services
             response.JWToken = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
             response.Email = user.Email;
             response.UserName = user.UserName;
+            response.ProfileImageUrl = user.ProfileImageUrl;
             var rolesList = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
             response.Roles = rolesList.ToList();
             response.IsVerified = user.EmailConfirmed;
@@ -159,16 +160,12 @@ namespace CleanArchitecture.Infrastructure.Services
                 throw new ApiException(string.Join(", ", result.Errors.Select(e => e.Description)));
 
             // Rol ata
-            var role = isClub ? Roles.Club.ToString() : Roles.Basic.ToString();
+            var role = isClub ? Roles.Club.ToString() : Roles.Student.ToString();
             if (!await _roleManager.RoleExistsAsync(role))
             {
                 await _roleManager.CreateAsync(new Microsoft.AspNetCore.Identity.IdentityRole(role));
             }
             await _userManager.AddToRoleAsync(user, role);
-            if (isClub && await _userManager.IsInRoleAsync(user, Roles.Basic.ToString()))
-            {
-                await _userManager.RemoveFromRoleAsync(user, Roles.Basic.ToString());
-            }
             return isClub
                 ? $"Kulüp kaydı başarılı! Artık giriş yapabilirsiniz."
                 : $"Kayıt başarılı! Artık giriş yapabilirsiniz.";
@@ -261,25 +258,20 @@ namespace CleanArchitecture.Infrastructure.Services
             };
         }
 
-        public async Task<EmailRequest> ForgotPassword(ForgotPasswordRequest model, string origin)
+        public async Task<string> ForgotPassword(ForgotPasswordRequest model, string origin)
         {
             var account = await _userManager.FindByEmailAsync(model.Email);
 
-            // always return ok response to prevent email enumeration
-            if (account == null) throw new ApiException("User not found");
+            // Kullanıcı bulunamazsa yine de başarı dön (email enumeration önleme)
+            if (account == null)
+                return "Eğer bu e-posta kayıtlıysa şifre sıfırlama talebi gönderildi.";
 
             var code = await _userManager.GeneratePasswordResetTokenAsync(account);
-            var route = "api/account/reset-password/";
-            var _enpointUri = new Uri(string.Concat($"{origin}/", route));
-            var emailRequest = new EmailRequest()
-            {
-                Body = $"You reset token is - {code}",
-                To = model.Email,
-                Subject = "Reset Password",
-            };
-            //TODO: Attach Email Service here and configure it via appsettings
-            //await _emailService.SendAsync(emailRequest);
-            return emailRequest;
+            // TODO: E-posta servisi entegre edildiğinde buraya eklenmeli
+            // Geliştirme ortamı için token konsola yazdırılıyor:
+            Console.WriteLine($"[ForgotPassword] {model.Email} => Token: {code}");
+
+            return "Şifre sıfırlama talebi alındı. Lütfen e-postanızı kontrol edin.";
         }
 
         public async Task<string> ResetPassword(ResetPasswordRequest model)

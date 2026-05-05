@@ -23,6 +23,7 @@ namespace CleanArchitecture.Core.DTOs.Event
         public string OrganizerProfileImageUrl { get; set; }
         public string ClubId { get; set; }
         public string ClubName { get; set; }
+        public string ClubProfileImageUrl { get; set; }
         public string ClubInitials { get; set; }
         public bool IsClubFollowedByCurrentUser { get; set; }
         public int LikeCount { get; set; }
@@ -70,11 +71,14 @@ namespace CleanArchitecture.Core.DTOs.Event
         public string OrganizerProfileImageUrl { get; set; }
         public string ClubId { get; set; }
         public string ClubName { get; set; }
+        public string ClubInitials { get; set; }
+        public string ClubProfileImageUrl { get; set; }
         public string CategoryName { get; set; }
         public decimal Price { get; set; }
         public DateTime Date { get; set; }
         public string ImageUrl { get; set; }
         public int LikeCount { get; set; }
+        public int CommentCount { get; set; }
         public bool IsLikedByCurrentUser { get; set; }
     }
 }

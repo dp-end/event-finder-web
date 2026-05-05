@@ -1,10 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { ClubService } from '../../../services/club.service';
 import { ClubListDto } from '../../../models/models';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-clubs',
@@ -23,7 +24,11 @@ export class Clubs implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private searchSubject = new Subject<string>();
 
-  constructor(private clubService: ClubService, private router: Router) {}
+  constructor(
+    private clubService: ClubService,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     this.loadClubs();
@@ -42,15 +47,25 @@ export class Clubs implements OnInit, OnDestroy {
   loadClubs() {
     this.isLoading = true;
     this.error = '';
+    this.cdr.detectChanges();
+
     this.clubService.getAll().pipe(takeUntil(this.destroy$)).subscribe({
       next: (clubs) => {
-        this.clubs = clubs;
-        this.filteredClubs = clubs;
-        this.isLoading = false;
+        this.clubs        = Array.isArray(clubs) ? clubs : [];
+        this.filteredClubs = this.clubs;
+        this.isLoading    = false;
+        this.error        = '';
+        this.cdr.detectChanges();
       },
       error: (err) => {
-        this.error = err.message || 'Kulüpler yüklenemedi.';
+        console.error('Kulüpler yüklenemedi:', err);
+        this.error     = 'Kulüpler yüklenemedi. Lütfen tekrar deneyin.';
         this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+      complete: () => {
+        this.isLoading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -61,18 +76,22 @@ export class Clubs implements OnInit, OnDestroy {
 
   filterClubs() {
     const q = this.searchText.toLowerCase().trim();
-    if (!q) {
-      this.filteredClubs = this.clubs;
-    } else {
-      this.filteredClubs = this.clubs.filter(c =>
-        c.name.toLowerCase().includes(q) ||
-        (c.category && c.category.toLowerCase().includes(q))
-      );
-    }
+    this.filteredClubs = q
+      ? this.clubs.filter(c =>
+          c.name.toLowerCase().includes(q) ||
+          (c.category && c.category.toLowerCase().includes(q))
+        )
+      : this.clubs;
+    this.cdr.detectChanges();
   }
 
   goToClub(clubId: string) {
     this.router.navigate(['/club', clubId]);
+  }
+
+  resolveImageUrl(url?: string): string {
+    if (!url) return '';
+    return url.startsWith('/') ? `${environment.apiUrl}${url}` : url;
   }
 
   toggleFollow(event: Event, club: ClubListDto) {

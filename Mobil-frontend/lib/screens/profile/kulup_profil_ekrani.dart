@@ -145,6 +145,7 @@ class _KulupProfilEkraniState extends State<KulupProfilEkrani> {
     final cover = (club['coverImageUrl'] ?? '').toString().isEmpty
         ? 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=800'
         : AppConstants.resolveUrl(club['coverImageUrl'].toString());
+    final profileImageUrl = (club['profileImageUrl'] ?? '').toString();
     final followed = club['isFollowedByCurrentUser'] == true;
 
     return Scaffold(
@@ -182,7 +183,12 @@ class _KulupProfilEkraniState extends State<KulupProfilEkrani> {
                       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                       child: CircleAvatar(
                         radius: 40,
-                        child: Text(_initials(club['initials']?.toString() ?? name), style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                        backgroundImage: profileImageUrl.isNotEmpty
+                            ? NetworkImage(AppConstants.resolveUrl(profileImageUrl))
+                            : null,
+                        child: profileImageUrl.isEmpty
+                            ? Text(_initials(club['initials']?.toString() ?? name), style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold))
+                            : null,
                       ),
                     ),
                   ),

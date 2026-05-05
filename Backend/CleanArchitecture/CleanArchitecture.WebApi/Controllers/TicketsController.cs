@@ -178,12 +178,24 @@ namespace CleanArchitecture.WebApi.Controllers
 
         // POST /api/tickets/{id}/use - kapi girisi (QR tarama sonrasi)
         [HttpPost("{id:guid}/use")]
-        [Authorize(Roles = "SuperAdmin,Admin")]
+        [Authorize(Roles = "Club")]
         public async Task<IActionResult> MarkAsUsed(Guid id)
         {
             var success = await _ticketRepo.MarkAsUsedAsync(id);
             if (!success) return BadRequest(new { message = "Bilet bulunamadi veya zaten kullanilmis." });
             return Ok(new { message = "Bilet kullanildi olarak isaretlendi." });
+        }
+
+        // DELETE /api/tickets/{id} - bilet iptali (sadece kullanilmamis biletler)
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> Cancel(Guid id)
+        {
+            var userId = User.FindUserId();
+            if (string.IsNullOrWhiteSpace(userId)) return Unauthorized();
+
+            var success = await _ticketRepo.CancelAsync(id, userId);
+            if (!success) return BadRequest(new { message = "Bilet bulunamadi, zaten kullanilmis veya size ait degil." });
+            return Ok(new { message = "Biletiniz basariyla iptal edildi." });
         }
     }
 }

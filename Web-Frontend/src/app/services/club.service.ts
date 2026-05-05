@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { timeout } from 'rxjs/operators';
-import { ClubDto, ClubListDto, CreateClubDto } from '../models/models';
+import { map, timeout } from 'rxjs/operators';
+import { ClubDto, ClubListDto, CreateClubDto, FollowToggleResponse } from '../models/models';
 import { environment } from '../../environments/environment';
 
-const API_TIMEOUT = 10_000;
+const API_TIMEOUT = 20_000;
 
 @Injectable({ providedIn: 'root' })
 export class ClubService {
@@ -20,7 +20,17 @@ export class ClubService {
   update(id: string, dto: Partial<CreateClubDto>): Observable<ClubDto> { return this.http.put<ClubDto>(`${this.apiUrl}/${id}`, dto).pipe(timeout(API_TIMEOUT)); }
   delete(id: string): Observable<void>            { return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(timeout(API_TIMEOUT)); }
 
-  toggleFollow(id: string): Observable<{ isFollowing: boolean; followerCount: number }> {
-    return this.http.post<{ isFollowing: boolean; followerCount: number }>(`${this.apiUrl}/${id}/follow`, {}).pipe(timeout(API_TIMEOUT));
+  // Backend { following, followerCount, followingClubCount, message } döndürür
+  // isFollowing alanını following'den normalize ediyoruz
+  toggleFollow(id: string): Observable<FollowToggleResponse> {
+    return this.http.post<any>(`${this.apiUrl}/${id}/follow`, {}).pipe(
+      timeout(API_TIMEOUT),
+      map(res => ({
+        isFollowing: res.isFollowing ?? res.following ?? false,
+        followerCount: res.followerCount ?? 0,
+        followingClubCount: res.followingClubCount ?? 0,
+        message: res.message ?? ''
+      }))
+    );
   }
 }

@@ -1,5 +1,3 @@
-using System;
-
 namespace CleanArchitecture.Core.DTOs.Club
 {
     public class ClubDto
@@ -9,6 +7,7 @@ namespace CleanArchitecture.Core.DTOs.Club
         public string Initials { get; set; }
         public string Category { get; set; }
         public string Description { get; set; }
+        public string ProfileImageUrl { get; set; }
         public string CoverImageUrl { get; set; }
         public string InstagramHandle { get; set; }
         public int FollowerCount { get; set; }
@@ -26,7 +25,6 @@ namespace CleanArchitecture.Core.DTOs.Club
         public string InstagramHandle { get; set; }
     }
 
-    // Ana sayfada popüler kulüpler listesi için minimal DTO
     public class ClubListDto
     {
         public string Id { get; set; }
@@ -34,6 +32,8 @@ namespace CleanArchitecture.Core.DTOs.Club
         public string Initials { get; set; }
         public string Category { get; set; }
         public string Description { get; set; }
+        public string ProfileImageUrl { get; set; }
+        public string CoverImageUrl { get; set; }
         public int FollowerCount { get; set; }
         public int EventCount { get; set; }
         public bool IsFollowedByCurrentUser { get; set; }

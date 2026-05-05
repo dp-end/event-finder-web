@@ -137,6 +137,12 @@ namespace CleanArchitecture.Infrastructure.Contexts
                     .WithMany(e => e.Comments)
                     .HasForeignKey(c => c.EventId)
                     .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(c => c.ParentComment)
+                    .WithMany(c => c.Replies)
+                    .HasForeignKey(c => c.ParentCommentId)
+                    .IsRequired(false)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             // -------- EventLike (composite PK) --------

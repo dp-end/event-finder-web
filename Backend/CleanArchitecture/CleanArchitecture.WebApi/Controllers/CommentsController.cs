@@ -42,6 +42,7 @@ namespace CleanArchitecture.WebApi.Controllers
         {
             var userId = User.FindUserId();
             if (string.IsNullOrWhiteSpace(userId)) return Unauthorized();
+            if (string.IsNullOrWhiteSpace(dto.Content)) return BadRequest(new { message = "Yorum bos olamaz." });
 
             var fullName = $"{User.FindFirstValue(ClaimTypes.GivenName)} {User.FindFirstValue(ClaimTypes.Surname)}".Trim();
             if (string.IsNullOrWhiteSpace(fullName)) fullName = User.FindFirstValue(ClaimTypes.Name) ?? "Kullanici";
@@ -56,6 +57,25 @@ namespace CleanArchitecture.WebApi.Controllers
             var eventEntity = await _context.Events
                 .AsNoTracking()
                 .FirstOrDefaultAsync(e => e.Id == dto.EventId);
+
+            if (dto.ParentCommentId.HasValue)
+            {
+                var parentComment = await _context.Comments
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(c => c.Id == dto.ParentCommentId.Value);
+
+                if (parentComment != null
+                    && !string.IsNullOrWhiteSpace(parentComment.ApplicationUserId)
+                    && parentComment.ApplicationUserId != userId)
+                {
+                    await _notificationRepo.CreateAsync(
+                        parentComment.ApplicationUserId,
+                        "Yeni Cevap",
+                        $"{fullName} yorumunuza cevap verdi.",
+                        NotificationType.EventCommented,
+                        relatedEventId: dto.EventId);
+                }
+            }
 
             if (eventEntity != null
                 && !string.IsNullOrWhiteSpace(eventEntity.OwnerId)

@@ -7,7 +7,10 @@
         <polyline points="12 19 5 12 12 5"></polyline>
       </svg>
     </button>
-    <h2>Etkinlik Oluştur</h2>
+    <div class="header-title">
+      <span class="page-kicker">Yayınla</span>
+      <h2>Etkinlik Oluştur</h2>
+    </div>
   </header>
 
   @if (successMessage) {
@@ -96,9 +99,9 @@
               <line x1="12" y1="12" x2="12" y2="21"></line>
               <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
             </svg>
-            <span>{{ selectedFileName || 'Bilgisayardan seç (jpg, png, gif — max 5 MB)' }}</span>
+            <span>{{ selectedFileName || 'Bilgisayardan seç (jpg, png, webp)' }}</span>
           </label>
-          <input id="imageFile" type="file" accept="image/*" (change)="onFileSelected($event)" style="display:none">
+          <input id="imageFile" type="file" accept="image/*" (change)="onFileSelected($event)">
 
           @if (imagePreviewUrl) {
             <div class="image-preview">
@@ -109,7 +112,7 @@
         </div>
 
         <div class="url-fallback">
-          <label for="imageUrl" style="font-size:12px;color:#718096">Veya görsel URL'si girin:</label>
+          <label for="imageUrl">Veya görsel URL'si girin:</label>
           <input id="imageUrl" type="url" placeholder="https://... (isteğe bağlı)"
                  [(ngModel)]="form.imageUrl" name="imageUrl" [disabled]="!!imagePreviewUrl">
         </div>

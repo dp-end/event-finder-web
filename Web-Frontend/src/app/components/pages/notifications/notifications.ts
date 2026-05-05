@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { NotificationService } from '../../../services/notification.service';
+import { PreferencesService } from '../../../services/preferences.service';
 import { NotificationDto, NotificationType } from '../../../models/models';
 
 @Component({
@@ -25,6 +26,8 @@ export class Notifications implements OnInit, OnDestroy {
 
   constructor(
     private notificationService: NotificationService,
+    private preferencesService: PreferencesService,
+    private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -59,6 +62,24 @@ export class Notifications implements OnInit, OnDestroy {
     });
   }
 
+  openNotification(notification: NotificationDto): void {
+    const navigate = () => this.navigateNotification(notification);
+
+    if (notification.isRead) {
+      navigate();
+      return;
+    }
+
+    this.notificationService.markAsRead(notification.id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: () => {
+        notification.isRead = true;
+        this.cdr.detectChanges();
+        navigate();
+      },
+      error: () => navigate()
+    });
+  }
+
   markAllAsRead(): void {
     this.notificationService.markAllAsRead().pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
@@ -87,10 +108,40 @@ export class Notifications implements OnInit, OnDestroy {
     const diffHour = Math.floor(diffMin / 60);
     const diffDay  = Math.floor(diffHour / 24);
 
-    if (diffMin < 1)   return 'Az önce';
-    if (diffMin < 60)  return `${diffMin} dk önce`;
-    if (diffHour < 24) return `${diffHour} saat önce`;
-    if (diffDay < 7)   return `${diffDay} gün önce`;
-    return date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' });
+    const isEnglish = this.preferencesService.language === 'en';
+    if (diffMin < 1)   return isEnglish ? 'Just now' : 'Az önce';
+    if (diffMin < 60)  return isEnglish ? `${diffMin} min ago` : `${diffMin} dk önce`;
+    if (diffHour < 24) return isEnglish ? `${diffHour} h ago` : `${diffHour} saat önce`;
+    if (diffDay < 7)   return isEnglish ? `${diffDay} days ago` : `${diffDay} gün önce`;
+    return date.toLocaleDateString(this.preferencesService.locale, { day: 'numeric', month: 'long' });
+  }
+
+  private navigateNotification(notification: NotificationDto): void {
+    const type = Number(notification.type);
+    const eventId = notification.relatedEventId
+      || (this.isEventNotification(type) ? notification.relatedEntityId : undefined);
+    const clubId = notification.relatedClubId
+      || (type === NotificationType.ClubFollowed ? notification.relatedEntityId : undefined);
+
+    if (eventId) {
+      this.router.navigate(['/event', eventId]);
+      return;
+    }
+
+    if (clubId) {
+      this.router.navigate(['/club', clubId]);
+    }
+  }
+
+  private isEventNotification(type: number): boolean {
+    return [
+      NotificationType.NewEvent,
+      NotificationType.TicketPurchased,
+      NotificationType.EventReminder,
+      NotificationType.EventCancelled,
+      NotificationType.ClubNewEvent,
+      NotificationType.EventCommented,
+      NotificationType.EventLiked
+    ].includes(type);
   }
 }

@@ -1,16 +1,38 @@
-
 .app-layout {
   display: flex;
   min-height: 100vh;
-  background-color: #fcfcfd;
+  background:
+    linear-gradient(90deg, rgba(2,6,14,.7), rgba(2,6,14,.2) 28%, rgba(2,6,14,.68)),
+    transparent;
   position: relative;
-  overflow-x: hidden; /* Sağda solda taşma olmasın diye */
+  overflow-x: hidden;
 }
 
-/* Sayfa içeriği artık tüm ekranı kaplayacak */
+:host-context(body.dark-theme) .app-layout {
+  background:
+    linear-gradient(90deg, rgba(1,4,10,.84), rgba(1,4,10,.42) 38%, rgba(1,4,10,.78)),
+    transparent;
+}
+
 .page-content {
   flex-grow: 1;
   width: 100%;
   padding: 0;
-  /* Eskiden burada olan margin-left: 280px; kısmını sildik! */
+  position: relative;
+}
+
+.page-content::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 7px;
+  height: 100vh;
+  background: linear-gradient(180deg, var(--lime), var(--brand), var(--pink));
+  opacity: .9;
+  z-index: 20;
+}
+
+@media (max-width: 720px) {
+  .page-content::before { width: 0; }
 }

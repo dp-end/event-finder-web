@@ -2,12 +2,10 @@ version=1
 
 # This file caches language service data to improve the performance of C# Dev Kit.
 # It is not intended for manual editing. It can safely be deleted and will be
-# regenerated automatically.
+# regenerated automatically. For more information, see https://aka.ms/lscache
 #
-# To exclude from version control, add *.lscache to your .gitignore file.
-#
-# To disable caching, add the following to your VS Code settings:
-#   "dotnet.projectsystem.enableLanguageServiceCache": false
+# To control where cache files are stored, use the following VS Code setting:
+#   "dotnet.projectsystem.cacheInProjectFolder": true
 
 [project]
 language=C#
@@ -58,7 +56,9 @@ Behaviours/ValidationBehaviour.cs
 DTOs/Account/
  AuthenticationRequest.cs
  AuthenticationResponse.cs
+ ChangePasswordRequest.cs
  ForgotPasswordRequest.cs
+ ProfileDto.cs
  RefreshToken.cs
  RegisterRequest.cs
  VerifyEmailRequest.cs
@@ -71,6 +71,7 @@ DTOs/
  Notification/NotificationDto.cs
  Ticket/TicketDto.cs
 Entities/
+ ApplicationUser.cs
  AuditableBaseEntity.cs
  BaseEntity.cs
  Category.cs
@@ -81,6 +82,7 @@ Entities/
  EventLike.cs
  Notification.cs
  Product.cs
+ Student.cs
  Ticket.cs
 Enums/Roles.cs
 Exceptions/
@@ -113,7 +115,7 @@ Wrappers/
  PagedResponse.cs
 
 [metadataReferences]
-../../../../../../../../Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/8.0.25/ref/net8.0/
+<DOTNET>/packs/Microsoft.NETCore.App.Ref/8.0.25/ref/net8.0/
  Microsoft.CSharp.dll
  Microsoft.VisualBasic.Core.dll
  Microsoft.VisualBasic.dll
@@ -142,7 +144,6 @@ Wrappers/
  System.Data.dll
  System.Diagnostics.Contracts.dll
  System.Diagnostics.Debug.dll
- System.Diagnostics.DiagnosticSource.dll
  System.Diagnostics.FileVersionInfo.dll
  System.Diagnostics.Process.dll
  System.Diagnostics.StackTrace.dll
@@ -278,29 +279,51 @@ Wrappers/
  System.Xml.XPath.XDocument.dll
  WindowsBase.dll
 <NUGET>/
- automapper/14.0.0/lib/net8.0/AutoMapper.dll
+ automapper/16.1.1/lib/net8.0/AutoMapper.dll
  fluentvalidation.dependencyinjectionextensions/9.1.2/lib/netstandard2.0/FluentValidation.DependencyInjectionExtensions.dll
  fluentvalidation/9.1.2/lib/netstandard2.0/FluentValidation.dll
  mediatr.contracts/2.0.1/lib/netstandard2.0/MediatR.Contracts.dll
  mediatr/12.4.1/lib/net6.0/MediatR.dll
- microsoft.extensions.dependencyinjection.abstractions/8.0.0/lib/net8.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll
- microsoft.extensions.options/8.0.0/lib/net8.0/Microsoft.Extensions.Options.dll
- microsoft.extensions.primitives/8.0.0/lib/net8.0/Microsoft.Extensions.Primitives.dll
+ microsoft.aspnetcore.cryptography.internal/8.0.14/lib/net8.0/Microsoft.AspNetCore.Cryptography.Internal.dll
+ microsoft.aspnetcore.cryptography.keyderivation/8.0.14/lib/net8.0/Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
+ microsoft.aspnetcore.identity.entityframeworkcore/8.0.14/lib/net8.0/Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+ microsoft.entityframeworkcore.abstractions/8.0.14/lib/net8.0/Microsoft.EntityFrameworkCore.Abstractions.dll
+ microsoft.entityframeworkcore.relational/8.0.14/lib/net8.0/Microsoft.EntityFrameworkCore.Relational.dll
+ microsoft.entityframeworkcore/8.0.14/lib/net8.0/Microsoft.EntityFrameworkCore.dll
+ microsoft.extensions.caching.abstractions/8.0.0/lib/net8.0/Microsoft.Extensions.Caching.Abstractions.dll
+ microsoft.extensions.caching.memory/8.0.1/lib/net8.0/Microsoft.Extensions.Caching.Memory.dll
+ microsoft.extensions.configuration.abstractions/8.0.0/lib/net8.0/Microsoft.Extensions.Configuration.Abstractions.dll
+ microsoft.extensions.dependencyinjection.abstractions/10.0.0/lib/net8.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll
+ microsoft.extensions.dependencyinjection/8.0.1/lib/net8.0/Microsoft.Extensions.DependencyInjection.dll
+ microsoft.extensions.identity.core/8.0.14/lib/net8.0/Microsoft.Extensions.Identity.Core.dll
+ microsoft.extensions.identity.stores/8.0.14/lib/net8.0/Microsoft.Extensions.Identity.Stores.dll
+ microsoft.extensions.logging.abstractions/10.0.0/lib/net8.0/Microsoft.Extensions.Logging.Abstractions.dll
+ microsoft.extensions.logging/8.0.1/lib/net8.0/Microsoft.Extensions.Logging.dll
+ microsoft.extensions.options/10.0.0/lib/net8.0/Microsoft.Extensions.Options.dll
+ microsoft.extensions.primitives/10.0.0/lib/net8.0/Microsoft.Extensions.Primitives.dll
+ microsoft.identitymodel.abstractions/8.14.0/lib/net8.0/Microsoft.IdentityModel.Abstractions.dll
+ microsoft.identitymodel.jsonwebtokens/8.14.0/lib/net8.0/Microsoft.IdentityModel.JsonWebTokens.dll
+ microsoft.identitymodel.logging/8.14.0/lib/net8.0/Microsoft.IdentityModel.Logging.dll
+ microsoft.identitymodel.tokens/8.14.0/lib/net8.0/Microsoft.IdentityModel.Tokens.dll
  newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll
+ system.diagnostics.diagnosticsource/10.0.0/lib/net8.0/System.Diagnostics.DiagnosticSource.dll
 
 [analyzerReferences]
-../../../../../../../../Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/8.0.25/analyzers/dotnet/cs/
+<DOTNET>/packs/Microsoft.NETCore.App.Ref/8.0.25/analyzers/dotnet/cs/
  Microsoft.Interop.ComInterfaceGenerator.dll
  Microsoft.Interop.JavaScript.JSImportGenerator.dll
  Microsoft.Interop.LibraryImportGenerator.dll
  Microsoft.Interop.SourceGeneration.dll
  System.Text.Json.SourceGeneration.dll
  System.Text.RegularExpressions.Generator.dll
-../../../../../../../../Program Files/dotnet/sdk/10.0.200/Sdks/Microsoft.NET.Sdk/analyzers/
+<DOTNET>/sdk/10.0.200/Sdks/Microsoft.NET.Sdk/analyzers/
  Microsoft.CodeAnalysis.CSharp.NetAnalyzers.dll
  Microsoft.CodeAnalysis.NetAnalyzers.dll
-<NUGET>/microsoft.extensions.options/8.0.0/analyzers/dotnet/roslyn4.4/cs/Microsoft.Extensions.Options.SourceGeneration.dll
+<NUGET>/
+ microsoft.entityframeworkcore.analyzers/8.0.14/analyzers/dotnet/cs/Microsoft.EntityFrameworkCore.Analyzers.dll
+ microsoft.extensions.logging.abstractions/10.0.0/analyzers/dotnet/roslyn4.4/cs/Microsoft.Extensions.Logging.Generators.dll
+ microsoft.extensions.options/10.0.0/analyzers/dotnet/roslyn4.4/cs/Microsoft.Extensions.Options.SourceGeneration.dll
 
 [analyzerConfigFiles]
-../../../../../../../../Program Files/dotnet/sdk/10.0.200/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_8_default.globalconfig
+<DOTNET>/sdk/10.0.200/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_8_default.globalconfig
 obj/Debug/net8.0/CleanArchitecture.Core.GeneratedMSBuildEditorConfig.editorconfig

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace CleanArchitecture.Application.Entities
 {
@@ -8,13 +9,15 @@ namespace CleanArchitecture.Application.Entities
         public string Content { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        // Hangi etkinliğe yapıldı
         public Guid EventId { get; set; }
         public Event Event { get; set; }
 
-        // Hangi kullanıcı yazdı (sadece ID tutuyoruz, circular dependency'den kaçınmak için)
+        public Guid? ParentCommentId { get; set; }
+        public Comment ParentComment { get; set; }
+        public ICollection<Comment> Replies { get; set; }
+
         public string ApplicationUserId { get; set; }
-        public string UserFullName { get; set; }   // Denormalized: sorgu kolaylığı için
-        public string UserInitials { get; set; }   // Denormalized: avatar harfleri (AY, ZK vb.)
+        public string UserFullName { get; set; }
+        public string UserInitials { get; set; }
     }
 }

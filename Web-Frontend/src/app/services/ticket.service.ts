@@ -13,9 +13,10 @@ export class TicketService {
 
   constructor(private http: HttpClient) {}
 
-  getMyTickets(): Observable<TicketDto[]>               { return this.http.get<TicketDto[]>(`${this.apiUrl}/my-tickets`).pipe(timeout(API_TIMEOUT)); }
+  getMyTickets(): Observable<TicketDto[]>               { return this.http.get<TicketDto[]>(this.apiUrl).pipe(timeout(API_TIMEOUT)); }
   getById(id: string): Observable<TicketDto>            { return this.http.get<TicketDto>(`${this.apiUrl}/${id}`).pipe(timeout(API_TIMEOUT)); }
   purchase(dto: PurchaseTicketDto): Observable<TicketDto>{ return this.http.post<TicketDto>(`${this.apiUrl}/purchase`, dto).pipe(timeout(API_TIMEOUT)); }
   checkTicket(eventId: string): Observable<TicketCheckDto>{ return this.http.get<TicketCheckDto>(`${this.apiUrl}/check/${eventId}`).pipe(timeout(API_TIMEOUT)); }
   markAsUsed(id: string): Observable<void>              { return this.http.post<void>(`${this.apiUrl}/${id}/use`, {}).pipe(timeout(API_TIMEOUT)); }
+  cancel(id: string): Observable<{ message: string }>   { return this.http.delete<{ message: string }>(`${this.apiUrl}/${id}`).pipe(timeout(API_TIMEOUT)); }
 }

@@ -27,15 +27,15 @@
 
     <div class="card-body">
       <div class="club-info">
-        <div class="club-avatar organizer-avatar" (click)="filterByOrganizer($event)">
-          @if (!event.clubName && event.ownerProfileImageUrl) {
-            <img [src]="resolveImageUrl(event.ownerProfileImageUrl)" [alt]="event.ownerName || 'Organizatör'">
+        <div class="club-avatar organizer-avatar" (click)="goToOrganizer($event)" [title]="organizerName">
+          @if (organizerProfileImageUrl) {
+            <img [src]="resolveImageUrl(organizerProfileImageUrl)" [alt]="organizerName">
           } @else {
-            {{ event.clubInitials || event.ownerInitials || '?' }}
+            {{ organizerInitials }}
           }
         </div>
-        <span class="club-name organizer-name" (click)="filterByOrganizer($event)">
-          {{ event.clubName || event.ownerName || 'Organizatör' }}
+        <span class="club-name organizer-name" (click)="goToOrganizer($event)" [title]="organizerName">
+          {{ organizerName }}
         </span>
         @if (event.categoryName) {
           <span class="category-tag">{{ event.categoryName }}</span>
@@ -61,12 +61,12 @@
         </svg>
         {{ event.likeCount }}
       </button>
-      <div class="interaction">
+      <button class="interaction interaction-btn comment-action" type="button" (click)="goToComments($event)">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
         </svg>
         {{ event.commentCount }}
-      </div>
+      </button>
     </div>
 
   </div>

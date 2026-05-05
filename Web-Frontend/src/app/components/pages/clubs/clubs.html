@@ -8,6 +8,7 @@
       </svg>
     </button>
     <div class="header-title">
+      <span class="page-kicker">Topluluklar</span>
       <h1>Kulüpleri Keşfet</h1>
       @if (!isLoading && !error) {
         <span class="count-badge">{{ filteredClubs.length }}</span>
@@ -26,7 +27,12 @@
            [(ngModel)]="searchText"
            (input)="onSearchInput()">
     @if (searchText) {
-      <button class="clear-btn" (click)="searchText=''; filterClubs()">✕</button>
+      <button class="clear-btn" type="button" (click)="searchText=''; filterClubs()" aria-label="Aramayı temizle">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
     }
   </div>
 
@@ -60,7 +66,13 @@
     <div class="clubs-grid">
       @for (club of filteredClubs; track club.id) {
         <div class="club-card" (click)="goToClub(club.id)">
-          <div class="club-logo">{{ club.initials }}</div>
+          <div class="club-logo">
+            @if (club.profileImageUrl) {
+              <img [src]="resolveImageUrl(club.profileImageUrl)" [alt]="club.name">
+            } @else {
+              {{ club.initials }}
+            }
+          </div>
           <div class="club-info">
             <h3>{{ club.name }}</h3>
             @if (club.category) {
@@ -79,6 +91,7 @@
             </div>
           </div>
           <button class="follow-btn"
+                  type="button"
                   [class.following]="club.isFollowedByCurrentUser"
                   (click)="toggleFollow($event, club)">
             @if (club.isFollowedByCurrentUser) {

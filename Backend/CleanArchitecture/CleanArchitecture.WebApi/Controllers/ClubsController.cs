@@ -56,7 +56,7 @@ namespace CleanArchitecture.WebApi.Controllers
 
         // POST /api/clubs
         [HttpPost]
-        [Authorize(Roles = "SuperAdmin,Admin")]
+        [Authorize(Roles = "Club")]
         public async Task<IActionResult> Create([FromBody] CreateClubDto dto)
         {
             var entity = new Club
@@ -84,9 +84,8 @@ namespace CleanArchitecture.WebApi.Controllers
         {
             if (!await _clubRepo.ExistsAsync(id)) return NotFound();
             var userId = User.FindUserId();
-            var isAdmin = User.IsInRole("Admin") || User.IsInRole("SuperAdmin");
             var ownsClub = await _context.Clubs.AnyAsync(c => c.Id == id && c.AdminUserId == userId);
-            if (!isAdmin && !ownsClub) return Forbid();
+            if (!ownsClub) return Forbid();
 
             var entity = new Club
             {
@@ -104,7 +103,7 @@ namespace CleanArchitecture.WebApi.Controllers
 
         // DELETE /api/clubs/{id}
         [HttpDelete("{id}")]
-        [Authorize(Roles = "SuperAdmin,Admin")]
+        [Authorize(Roles = "Club")]
         public async Task<IActionResult> Delete(string id)
         {
             if (!await _clubRepo.ExistsAsync(id)) return NotFound();

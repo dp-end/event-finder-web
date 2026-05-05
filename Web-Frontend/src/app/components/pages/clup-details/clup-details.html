@@ -27,21 +27,37 @@
   <div class="club-profile-card">
     <div class="profile-content">
       <div class="profile-main-row">
-        <div class="club-logo">{{ club.initials }}</div>
+        <div class="club-logo">
+          @if (clubProfileImageUrl) {
+            <img [src]="resolveImageUrl(clubProfileImageUrl)" [alt]="club.name">
+          } @else {
+            {{ club.initials }}
+          }
+        </div>
         <div class="club-titles">
           <h1>{{ club.name }}</h1>
           <span class="category-chip">{{ club.category }}</span>
         </div>
-        <button class="follow-btn" [class.following]="isFollowing" (click)="toggleFollow()">
-          @if (isFollowing) {
+        @if (canEditClub) {
+          <button class="follow-btn edit-profile-btn" type="button" routerLink="/settings" [queryParams]="{panel: 'profile'}">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="20 6 9 17 4 12"></polyline>
+              <path d="M12 20h9"></path>
+              <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
             </svg>
-            Takip Ediliyor
-          } @else {
-            Takip Et
-          }
-        </button>
+            Profili Düzenle
+          </button>
+        } @else {
+          <button class="follow-btn" type="button" [class.following]="isFollowing" (click)="toggleFollow()">
+            @if (isFollowing) {
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Takip Ediliyor
+            } @else {
+              Takip Et
+            }
+          </button>
+        }
       </div>
 
       <div class="stats-row">
@@ -50,8 +66,8 @@
           <span>Takipçi</span>
         </div>
         <div class="stat-box">
-          <strong>{{ club.eventCount }}</strong>
-          <span>Etkinlik</span>
+          <strong>{{ uploadedEventCount }}</strong>
+          <span>Yüklenen Etkinlik</span>
         </div>
       </div>
     </div>
@@ -60,7 +76,7 @@
   <!-- SEKMELER -->
   <div class="custom-tabs">
     <button class="tab-btn" [class.active]="activeTab === 'events'" (click)="switchTab('events')">
-      Etkinlikler
+      Yüklediği Etkinlikler
     </button>
     <button class="tab-btn" [class.active]="activeTab === 'about'" (click)="switchTab('about')">
       Hakkında
@@ -71,11 +87,15 @@
   <main class="tab-content">
 
     @if (activeTab === 'events') {
+      <div class="section-heading-row">
+        <h2>{{ club.name }} Etkinlikleri</h2>
+        <span>{{ clubEvents.length }} etkinlik</span>
+      </div>
       @if (isLoadingEvents) {
         <div class="loading-state"><div class="spinner"></div></div>
       } @else if (clubEvents.length === 0) {
         <div class="empty-state">
-          <p>Bu kulüp henüz etkinlik paylaşmadı.</p>
+          <p>Bu kulüp henüz etkinlik yüklemedi.</p>
         </div>
       } @else {
         <div class="events-grid">
@@ -96,7 +116,13 @@
         <div class="info-grid">
           @if (club.instagramHandle) {
             <div class="info-card">
-              <span class="icon">📸</span>
+              <span class="icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="6" width="20" height="14" rx="4"></rect>
+                  <circle cx="12" cy="13" r="3"></circle>
+                  <path d="M8 6l1.4-2h5.2L16 6"></path>
+                </svg>
+              </span>
               <div>
                 <label>Instagram</label>
                 <p>{{ club.instagramHandle }}</p>

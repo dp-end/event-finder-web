@@ -91,29 +91,45 @@ export class CreateEvent implements OnInit, OnDestroy {
     if (this.isSubmitting || this.isUploadingImage) return;
     this.successMessage = null;
     this.errorMessage = null;
-
-    const payload = new FormData();
-    payload.append('title', this.form.title.trim());
-    payload.append('description', this.form.description.trim());
-    payload.append('date', new Date(this.form.date).toISOString());
-    payload.append('location', this.form.location.trim());
-    payload.append('address', this.form.address.trim());
-    payload.append('price', Number(this.form.price).toString());
-    payload.append('quota', Number(this.form.quota).toString());
+    this.isSubmitting = true;
 
     if (this.selectedImageFile) {
-      payload.append('imageFile', this.selectedImageFile);
-    } else if (this.form.imageUrl.trim()) {
-      payload.append('imageUrl', this.form.imageUrl.trim());
+      // Önce resmi yükle, sonra etkinliği oluştur
+      this.isUploadingImage = true;
+      this.eventService.uploadImage(this.selectedImageFile).pipe(takeUntil(this.destroy$)).subscribe({
+        next: res => {
+          this.isUploadingImage = false;
+          this.form.imageUrl = res.imageUrl;
+          this.submitJson();
+        },
+        error: () => {
+          this.isUploadingImage = false;
+          this.isSubmitting = false;
+          this.errorMessage = 'Resim yüklenemedi. Lütfen tekrar deneyin.';
+        }
+      });
+    } else {
+      this.submitJson();
     }
+  }
 
-    if (this.form.categoryId) payload.append('categoryId', this.form.categoryId);
-
+  private submitJson(): void {
     const user = this.authService.getCurrentUser();
-    if (user?.clubId) payload.append('clubId', user.clubId);
 
-    this.isSubmitting = true;
-    this.eventService.create(payload).pipe(takeUntil(this.destroy$)).subscribe({
+    const dto = {
+      title:       this.form.title.trim(),
+      description: this.form.description.trim(),
+      date:        new Date(this.form.date).toISOString(),
+      location:    this.form.location.trim(),
+      address:     this.form.address.trim(),
+      price:       Number(this.form.price),
+      quota:       Number(this.form.quota),
+      imageUrl:    this.form.imageUrl.trim(),
+      categoryId:  this.form.categoryId || undefined,
+      clubId:      user?.clubId || undefined,
+    };
+
+    this.eventService.create(dto).pipe(takeUntil(this.destroy$)).subscribe({
       next: event => {
         this.successMessage = 'Etkinlik başarıyla oluşturuldu!';
         this.isSubmitting = false;

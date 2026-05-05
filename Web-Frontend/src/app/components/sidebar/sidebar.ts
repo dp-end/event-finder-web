@@ -6,6 +6,7 @@ import { SidebarService } from '../../services/sidebar';
 import { AuthService } from '../../services/auth';
 import { NotificationService } from '../../services/notification.service';
 import { AuthResponse } from '../../models/models';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-sidebar',
@@ -19,6 +20,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   isOpen = false;
   user: AuthResponse | null = null;
+  profileImageUrl = '';
   unreadCount = 0;
 
   get initials(): string {
@@ -52,8 +54,12 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
     this.authService.user$.pipe(takeUntil(this.destroy$)).subscribe(user => {
       this.user = user;
+      this.profileImageUrl = user?.profileImageUrl ?? '';
       this.cdr.detectChanges();
-      if (user) this.loadUnreadCount();
+      if (user) {
+        this.loadUnreadCount();
+        this.loadProfileImage();
+      }
     });
   }
 
@@ -69,6 +75,16 @@ export class SidebarComponent implements OnInit, OnDestroy {
     });
   }
 
+  private loadProfileImage(): void {
+    this.authService.getMe().pipe(takeUntil(this.destroy$)).subscribe({
+      next: profile => {
+        this.profileImageUrl = profile.profileImageUrl ?? '';
+        this.cdr.detectChanges();
+      },
+      error: () => {}
+    });
+  }
+
   closeMenu(): void {
     this.sidebarService.closeSidebar();
   }
@@ -77,5 +93,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.authService.logout();
     this.closeMenu();
     this.router.navigate(['/login']);
+  }
+
+  resolveImageUrl(url?: string): string {
+    if (!url) return '';
+    return url.startsWith('/') ? `${environment.apiUrl}${url}` : url;
   }
 }

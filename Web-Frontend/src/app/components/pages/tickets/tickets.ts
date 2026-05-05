@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { TicketService } from '../../../services/ticket.service';
+import { PreferencesService } from '../../../services/preferences.service';
 import { TicketDto } from '../../../models/models';
 import { environment } from '../../../../environments/environment';
 
@@ -19,6 +20,8 @@ export class Tickets implements OnInit, OnDestroy {
   tickets: TicketDto[] = [];
   selectedTicket: TicketDto | null = null;
   isLoading = true;
+  isCancelling = false;
+  cancelError: string | null = null;
   error: string | null = null;
 
   ngOnInit(): void {
@@ -30,7 +33,11 @@ export class Tickets implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  constructor(private ticketService: TicketService, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private ticketService: TicketService,
+    private preferencesService: PreferencesService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   loadTickets(): void {
     this.isLoading = true;
@@ -58,7 +65,7 @@ export class Tickets implements OnInit, OnDestroy {
   }
 
   formatDate(dateStr: string): string {
-    return new Date(dateStr).toLocaleString('tr-TR', {
+    return new Date(dateStr).toLocaleString(this.preferencesService.locale, {
       day: 'numeric', month: 'long', year: 'numeric',
       hour: '2-digit', minute: '2-digit'
     });
@@ -75,5 +82,26 @@ export class Tickets implements OnInit, OnDestroy {
 
   get usedTickets(): TicketDto[] {
     return this.tickets.filter(t => t.isUsed);
+  }
+
+  cancelTicket(ticket: TicketDto): void {
+    if (this.isCancelling) return;
+    if (!confirm(`"${ticket.eventTitle}" etkinliği için aldığınız bileti iptal etmek istediğinize emin misiniz?`)) return;
+
+    this.isCancelling = true;
+    this.cancelError = null;
+    this.ticketService.cancel(ticket.id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: () => {
+        this.tickets = this.tickets.filter(t => t.id !== ticket.id);
+        this.selectedTicket = null;
+        this.isCancelling = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.cancelError = err?.error?.message ?? 'Bilet iptal edilemedi.';
+        this.isCancelling = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 }

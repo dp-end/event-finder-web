@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
 
 import { RegisterClub } from './register-club';
 
@@ -8,7 +10,8 @@ describe('RegisterClub', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RegisterClub]
+      imports: [RegisterClub],
+      providers: [provideRouter([]), provideHttpClient()]
     })
     .compileComponents();
 

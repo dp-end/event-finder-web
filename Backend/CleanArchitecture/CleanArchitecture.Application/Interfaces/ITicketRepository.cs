@@ -14,5 +14,6 @@ namespace CleanArchitecture.Core.Interfaces
         Task<bool> MarkAsUsedAsync(Guid ticketId);          // Kapı giriş kontrolü için
         Task<bool> HasTicketAsync(Guid eventId, string userId);
         Task<int> GetRemainingQuotaAsync(Guid eventId);
+        Task<bool> CancelAsync(Guid ticketId, string userId);
     }
 }

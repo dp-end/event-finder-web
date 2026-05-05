@@ -14,7 +14,7 @@
       }
     </div>
     @if (unreadCount > 0) {
-      <button class="mark-all-btn" (click)="markAllAsRead()">Tümünü Okundu İşaretle</button>
+      <button class="mark-all-btn" type="button" (click)="markAllAsRead()">Tümünü okundu yap</button>
     }
   </header>
 
@@ -42,8 +42,13 @@
       @for (notif of notifications; track notif.id) {
         <div class="notification-item"
              [class.unread]="!notif.isRead"
-             (click)="markAsRead(notif)">
-          <div class="notif-icon">{{ getTypeIcon(notif.type) }}</div>
+             (click)="openNotification(notif)">
+          <div class="notif-icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+          </div>
           <div class="notif-content">
             <div class="notif-header">
               <strong>{{ notif.title }}</strong>

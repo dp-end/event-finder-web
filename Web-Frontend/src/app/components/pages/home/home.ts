@@ -8,7 +8,9 @@ import { SidebarService } from '../../../services/sidebar';
 import { EventService, EventFilterParams } from '../../../services/event.service';
 import { ClubService } from '../../../services/club.service';
 import { CategoryService } from '../../../services/category.service';
+import { PreferencesService } from '../../../services/preferences.service';
 import { EventListDto, ClubListDto, CategoryDto } from '../../../models/models';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-home',
@@ -24,11 +26,20 @@ export class Home implements OnInit, OnDestroy {
   categories: CategoryDto[] = [];
   activeCategory = 'Tümü';
   activeTimePeriod = 'Tümü';
+  activeEventType = 'Tümü';
   searchText = '';
   freeOnly = false;
+  maxPrice = 200;
+  readonly minFilterPrice = 10;
+  readonly maxFilterPrice = 500;
+  isFilterOpen = false;
+  draftFreeOnly = false;
+  draftMaxPrice = 200;
+  draftTimePeriod = 'Tümü';
   ownerIdFilter: string | null = null;
 
-  timePeriods = ['Tümü', 'Bugün', 'Bu Hafta', 'Bu Ay'];
+  timePeriods  = ['Tümü', 'Bugün', 'Bu Hafta', 'Bu Ay'];
+  eventTypes   = ['Tümü', 'Kulüp Etkinlikleri', 'Bireysel Etkinlikler'];
 
   events: EventListDto[] = [];
   topClubs: ClubListDto[] = [];
@@ -43,7 +54,8 @@ export class Home implements OnInit, OnDestroy {
     private clubService: ClubService,
     private categoryService: CategoryService,
     private cdr: ChangeDetectorRef,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private preferencesService: PreferencesService
   ) {}
 
   ngOnInit(): void {
@@ -86,8 +98,12 @@ export class Home implements OnInit, OnDestroy {
     if (this.searchText) filters.query = this.searchText;
     if (this.activeCategory !== 'Tümü') filters.category = this.activeCategory;
     if (this.freeOnly) filters.freeOnly = true;
+    if (!this.freeOnly && this.maxPrice < this.maxFilterPrice) filters.maxPrice = this.maxPrice;
     if (this.activeTimePeriod !== 'Tümü') filters.timePeriod = this.activeTimePeriod;
     if (this.ownerIdFilter) filters.ownerId = this.ownerIdFilter;
+    if (this.activeEventType !== 'Tümü') {
+      filters.eventType = this.activeEventType === 'Kulüp Etkinlikleri' ? 'club' : 'individual';
+    }
 
     this.eventService.getAll(filters).pipe(takeUntil(this.destroy$)).subscribe({
       next: events => {
@@ -119,6 +135,38 @@ export class Home implements OnInit, OnDestroy {
 
   openMenu(): void { this.sidebarService.toggleSidebar(); }
 
+  get hasAdvancedFilters(): boolean {
+    return this.freeOnly || this.maxPrice < this.maxFilterPrice || this.activeTimePeriod !== 'Tümü';
+  }
+
+  openFilterPanel(): void {
+    this.draftFreeOnly = this.freeOnly;
+    this.draftMaxPrice = this.maxPrice;
+    this.draftTimePeriod = this.activeTimePeriod;
+    this.isFilterOpen = true;
+  }
+
+  closeFilterPanel(): void {
+    this.isFilterOpen = false;
+  }
+
+  setDraftTimePeriod(period: string): void {
+    this.draftTimePeriod = period;
+  }
+
+  selectDraftPaid(): void {
+    this.draftFreeOnly = false;
+    if (this.draftMaxPrice >= this.maxFilterPrice) this.draftMaxPrice = 200;
+  }
+
+  applyAdvancedFilters(): void {
+    this.freeOnly = this.draftFreeOnly;
+    this.maxPrice = this.draftMaxPrice;
+    this.activeTimePeriod = this.draftTimePeriod;
+    this.isFilterOpen = false;
+    this.loadEvents();
+  }
+
   selectCategory(category: string): void {
     this.activeCategory = category;
     this.loadEvents();
@@ -126,6 +174,11 @@ export class Home implements OnInit, OnDestroy {
 
   selectTimePeriod(period: string): void {
     this.activeTimePeriod = period;
+    this.loadEvents();
+  }
+
+  selectEventType(type: string): void {
+    this.activeEventType = type;
     this.loadEvents();
   }
 
@@ -139,6 +192,13 @@ export class Home implements OnInit, OnDestroy {
   }
 
   formatPrice(price: number): string {
-    return price === 0 ? 'Ücretsiz' : `₺${price}`;
+    return price === 0
+      ? (this.preferencesService.language === 'en' ? 'Free' : 'Ücretsiz')
+      : `₺${price}`;
+  }
+
+  resolveImageUrl(url?: string): string {
+    if (!url) return '';
+    return url.startsWith('/') ? `${environment.apiUrl}${url}` : url;
   }
 }

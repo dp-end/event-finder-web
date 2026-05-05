@@ -1,14 +1,24 @@
 <div class="home-layout">
 
-  <!-- ÜST NAVİGASYON -->
+  <section class="discover-header">
+    <div>
+      <span class="page-kicker">Keşfet</span>
+      <h1>Kampüste sıradaki buluşmanı seç</h1>
+      <p>Topluluk etkinlikleri, bireysel buluşmalar ve ücretsiz fırsatlar tek akışta.</p>
+    </div>
+    @if (!isLoading && !error) {
+      <span class="event-count">{{ events.length }} etkinlik</span>
+    }
+  </section>
+
   <header class="top-nav">
-    <div class="menu-btn" (click)="openMenu()">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4a5568" stroke-width="2">
+    <button class="menu-btn" type="button" (click)="openMenu()" aria-label="Menüyü aç">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <line x1="3" y1="12" x2="21" y2="12"></line>
         <line x1="3" y1="6" x2="21" y2="6"></line>
         <line x1="3" y1="18" x2="21" y2="18"></line>
       </svg>
-    </div>
+    </button>
     <div class="search-container">
       <div class="search-box">
         <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a0aec0" stroke-width="2">
@@ -21,37 +31,110 @@
                (input)="onSearchInput()">
       </div>
     </div>
-    <button class="filter-btn" [class.active]="freeOnly" (click)="toggleFreeOnly()" title="Sadece ücretsiz">
+    <button class="filter-btn"
+            type="button"
+            [class.active]="isFilterOpen || hasAdvancedFilters"
+            (click)="openFilterPanel()"
+            title="Gelişmiş filtre"
+            aria-label="Gelişmiş filtreleri aç">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
       </svg>
+      @if (hasAdvancedFilters) {
+        <span class="filter-indicator" aria-hidden="true"></span>
+      }
     </button>
   </header>
+
+  @if (isFilterOpen) {
+    <div class="filter-backdrop" (click)="closeFilterPanel()"></div>
+    <section class="advanced-filter-sheet" role="dialog" aria-modal="true" aria-labelledby="advancedFilterTitle">
+      <div class="sheet-handle" aria-hidden="true"></div>
+
+      <h2 id="advancedFilterTitle">Gelişmiş Filtre</h2>
+
+      <div class="sheet-divider"></div>
+
+      <div class="filter-section">
+        <h3>Fiyat Seçenekleri</h3>
+
+        <div class="segment-row" role="group" aria-label="Fiyat filtresi">
+          <button class="segment-option" type="button"
+                  [class.active]="!draftFreeOnly && draftMaxPrice >= maxFilterPrice"
+                  (click)="draftFreeOnly = false; draftMaxPrice = maxFilterPrice">
+            <span>Tümü</span>
+          </button>
+          <button class="segment-option" type="button"
+                  [class.active]="draftFreeOnly"
+                  (click)="draftFreeOnly = true">
+            <span>Ücretsiz</span>
+          </button>
+          <button class="segment-option" type="button"
+                  [class.active]="!draftFreeOnly && draftMaxPrice < maxFilterPrice"
+                  (click)="selectDraftPaid()">
+            <span>Ücretli</span>
+          </button>
+        </div>
+
+        @if (!draftFreeOnly && draftMaxPrice < maxFilterPrice) {
+          <div class="price-row">
+            <span>Maksimum Fiyat:</span>
+            <strong>₺{{ draftMaxPrice }}</strong>
+          </div>
+          <input class="price-slider"
+                 type="range"
+                 [min]="minFilterPrice"
+                 [max]="maxFilterPrice"
+                 step="10"
+                 [(ngModel)]="draftMaxPrice"
+                 aria-label="Maksimum fiyat">
+        }
+      </div>
+
+      <div class="filter-section">
+        <h3>Zaman Dilimi</h3>
+        <div class="segment-row" role="group" aria-label="Zaman dilimi">
+          @for (period of timePeriods; track period) {
+            <button class="segment-option"
+                    type="button"
+                    [class.active]="draftTimePeriod === period"
+                    (click)="setDraftTimePeriod(period)">
+              @if (draftTimePeriod === period) {
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              }
+              <span>{{ period }}</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <button class="apply-filter-btn" type="button" (click)="applyAdvancedFilters()">Sonuçları Göster</button>
+    </section>
+  }
 
   <!-- KATEGORİ ÇUBUĞU -->
   <div class="category-bar">
     <button class="category-chip" [class.active]="activeCategory === 'Tümü'" (click)="selectCategory('Tümü')">
-      <span class="chip-icon">🎯</span> Tümü
+      Tümü
     </button>
     @for (cat of categories; track cat.id) {
       <button class="category-chip"
               [class.active]="activeCategory === cat.name"
               (click)="selectCategory(cat.name)">
-        @if (cat.iconName) {
-          <span class="chip-icon">{{ cat.iconName }}</span>
-        }
         {{ cat.name }}
       </button>
     }
   </div>
 
-  <!-- ZAMAN FİLTRESİ -->
+  <!-- ETKİNLİK TİPİ FİLTRESİ -->
   <div class="time-filter-bar">
-    @for (period of timePeriods; track period) {
+    @for (type of eventTypes; track type) {
       <button class="time-chip"
-              [class.active]="activeTimePeriod === period"
-              (click)="selectTimePeriod(period)">
-        {{ period }}
+              [class.active]="activeEventType === type"
+              (click)="selectEventType(type)">
+        {{ type }}
       </button>
     }
   </div>
@@ -97,7 +180,15 @@
     <aside class="sidebar-column">
       <div class="ranking-card">
         <div class="ranking-header">
-          <span class="trophy">🏆</span>
+          <span class="trophy" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M8 21h8"></path>
+              <path d="M12 17v4"></path>
+              <path d="M7 4h10v5a5 5 0 0 1-10 0V4z"></path>
+              <path d="M5 6H3a3 3 0 0 0 3 3h1"></path>
+              <path d="M19 6h2a3 3 0 0 1-3 3h-1"></path>
+            </svg>
+          </span>
           <h3>Popüler Kulüpler</h3>
         </div>
 
@@ -112,7 +203,13 @@
             @for (club of topClubs; track club.id; let i = $index) {
               <div class="ranking-item" [routerLink]="['/club', club.id]">
                 <span class="rank-number">{{ i + 1 }}</span>
-                <div class="club-circle">{{ club.initials }}</div>
+                <div class="club-circle">
+                  @if (club.profileImageUrl) {
+                    <img [src]="resolveImageUrl(club.profileImageUrl)" [alt]="club.name">
+                  } @else {
+                    {{ club.initials }}
+                  }
+                </div>
                 <div class="club-details">
                   <h4>{{ club.name }}</h4>
                   <p>{{ club.followerCount }} takipçi</p>

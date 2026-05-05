@@ -102,6 +102,19 @@ namespace CleanArchitecture.Infrastructure.Repositories
             return true;
         }
 
+        public async Task<bool> CancelAsync(Guid ticketId, string userId)
+        {
+            var ticket = await _context.Tickets
+                .FirstOrDefaultAsync(t => t.Id == ticketId && t.ApplicationUserId == userId);
+
+            if (ticket == null) return false;
+            if (ticket.IsUsed) return false;
+
+            _context.Tickets.Remove(ticket);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
         public async Task<bool> HasTicketAsync(Guid eventId, string userId)
         {
             return await _context.Tickets

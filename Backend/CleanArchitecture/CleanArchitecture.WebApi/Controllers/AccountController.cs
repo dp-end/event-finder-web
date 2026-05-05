@@ -103,12 +103,11 @@ namespace CleanArchitecture.WebApi.Controllers
             }
             else
             {
-                user.FirstName = request.FirstName ?? user.FirstName;
-                user.LastName = request.LastName ?? user.LastName;
-
-                user.University = request.University ?? user.University;
-                user.Department = request.Department ?? user.Department;
-                user.ProfileImageUrl = request.ProfileImageUrl ?? user.ProfileImageUrl;
+                if (!string.IsNullOrWhiteSpace(request.FirstName))  user.FirstName  = request.FirstName.Trim();
+                if (!string.IsNullOrWhiteSpace(request.LastName))   user.LastName   = request.LastName.Trim();
+                if (request.University   != null) user.University   = request.University.Trim();
+                if (request.Department   != null) user.Department   = request.Department.Trim();
+                if (request.ProfileImageUrl != null) user.ProfileImageUrl = request.ProfileImageUrl.Trim();
             }
 
             var result = await _userManager.UpdateAsync(user);
@@ -117,7 +116,6 @@ namespace CleanArchitecture.WebApi.Controllers
                 return BadRequest(new { message = string.Join(", ", result.Errors.Select(e => e.Description)) });
             }
 
-            await _context.SaveChangesAsync();
             return Ok(await BuildProfileDto(user));
         }
 

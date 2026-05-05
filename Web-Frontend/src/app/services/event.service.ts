@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { timeout } from 'rxjs/operators';
-import { EventDto, EventListDto, CreateEventDto } from '../models/models';
+import { EventDto, EventListDto, CreateEventDto, UpdateEventDto } from '../models/models';
 import { environment } from '../../environments/environment';
 
 export interface EventFilterParams {
@@ -10,11 +10,13 @@ export interface EventFilterParams {
   category?: string;
   freeOnly?: boolean;
   maxPrice?: number;
-  timePeriod?: string;
-  ownerId?: string;
+  timePeriod?: string;       // 'Bugün' | 'Bu Hafta' | 'Bu Ay'
+  eventType?: string;        // 'club' | 'individual'
+  creatorType?: string;      // backend'de aynı parametre — eventType ile eş değer
+  ownerId?: string;          // getByOwner için yardımcı — filtreye dahil edilmez
 }
 
-const API_TIMEOUT = 10_000;
+const API_TIMEOUT = 20_000;
 
 @Injectable({ providedIn: 'root' })
 export class EventService {
@@ -24,12 +26,14 @@ export class EventService {
 
   getAll(filters?: EventFilterParams): Observable<EventListDto[]> {
     let params = new HttpParams();
-    if (filters?.query)      params = params.set('query', filters.query);
-    if (filters?.category)   params = params.set('category', filters.category);
-    if (filters?.freeOnly)   params = params.set('freeOnly', 'true');
-    if (filters?.maxPrice !== undefined) params = params.set('maxPrice', filters.maxPrice.toString());
-    if (filters?.timePeriod) params = params.set('timePeriod', filters.timePeriod);
-    if (filters?.ownerId)    params = params.set('ownerId', filters.ownerId);
+    if (filters?.query)                    params = params.set('query', filters.query);
+    if (filters?.category)                 params = params.set('category', filters.category);
+    if (filters?.freeOnly)                 params = params.set('freeOnly', 'true');
+    if (filters?.maxPrice !== undefined)   params = params.set('maxPrice', filters.maxPrice.toString());
+    if (filters?.timePeriod)               params = params.set('timePeriod', filters.timePeriod);
+    // eventType ve creatorType backend'de aynı şeyi ifade eder; eventType öncelikli
+    const resolvedType = filters?.eventType ?? filters?.creatorType;
+    if (resolvedType)                      params = params.set('eventType', resolvedType);
     return this.http.get<EventListDto[]>(this.apiUrl, { params }).pipe(timeout(API_TIMEOUT));
   }
 
@@ -47,11 +51,26 @@ export class EventService {
     return this.http.get<EventListDto[]>(`${this.apiUrl}/club/${clubId}`).pipe(timeout(API_TIMEOUT));
   }
 
+  // GET /api/Events/owner/{ownerId}
+  getByOwner(ownerId: string): Observable<EventListDto[]> {
+    return this.http.get<EventListDto[]>(`${this.apiUrl}/owner/${ownerId}`).pipe(timeout(API_TIMEOUT));
+  }
+
+  // GET /api/Events/attendee/{userId}
+  getByAttendee(userId: string): Observable<EventListDto[]> {
+    return this.http.get<EventListDto[]>(`${this.apiUrl}/attendee/${userId}`).pipe(timeout(API_TIMEOUT));
+  }
+
+  // GET /api/Events/mine (auth gerekli)
+  getMine(): Observable<EventListDto[]> {
+    return this.http.get<EventListDto[]>(`${this.apiUrl}/mine`).pipe(timeout(API_TIMEOUT));
+  }
+
   create(dto: CreateEventDto | FormData): Observable<EventDto> {
     return this.http.post<EventDto>(this.apiUrl, dto).pipe(timeout(API_TIMEOUT));
   }
 
-  update(id: string, dto: Partial<CreateEventDto>): Observable<EventDto> {
+  update(id: string, dto: UpdateEventDto | Partial<CreateEventDto>): Observable<EventDto> {
     return this.http.put<EventDto>(`${this.apiUrl}/${id}`, dto).pipe(timeout(API_TIMEOUT));
   }
 
@@ -59,7 +78,7 @@ export class EventService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(timeout(API_TIMEOUT));
   }
 
-  toggleLike(id: string): Observable<{ isLiked: boolean; likeCount: number }> {
-    return this.http.post<{ isLiked: boolean; likeCount: number }>(`${this.apiUrl}/${id}/like`, {}).pipe(timeout(API_TIMEOUT));
+  toggleLike(id: string): Observable<{ liked: boolean; message: string }> {
+    return this.http.post<{ liked: boolean; message: string }>(`${this.apiUrl}/${id}/like`, {}).pipe(timeout(API_TIMEOUT));
   }
 }

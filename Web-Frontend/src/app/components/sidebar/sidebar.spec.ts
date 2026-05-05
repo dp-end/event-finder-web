@@ -1,18 +1,39 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { of } from 'rxjs';
 
-import { Sidebar } from './sidebar';
+import { AuthService } from '../../services/auth';
+import { NotificationService } from '../../services/notification.service';
+import { SidebarComponent } from './sidebar';
 
-describe('Sidebar', () => {
-  let component: Sidebar;
-  let fixture: ComponentFixture<Sidebar>;
+describe('SidebarComponent', () => {
+  let component: SidebarComponent;
+  let fixture: ComponentFixture<SidebarComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Sidebar]
+      imports: [SidebarComponent],
+      providers: [
+        provideRouter([]),
+        {
+          provide: AuthService,
+          useValue: {
+            user$: of(null),
+            isClubUser: () => false,
+            logout: () => {}
+          }
+        },
+        {
+          provide: NotificationService,
+          useValue: {
+            getUnreadCount: () => of(0)
+          }
+        }
+      ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Sidebar);
+    fixture = TestBed.createComponent(SidebarComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

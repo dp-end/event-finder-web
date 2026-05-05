@@ -16,7 +16,7 @@
       </div>
     </div>
 
-    <div *ngIf="errorMessage" class="error-container global-error" style="background-color: #ffe6e6; color: #d8000c; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center; font-size: 14px; border: 1px solid #ffcccc;">
+    <div *ngIf="errorMessage" class="error-container global-error">
       {{ errorMessage }}
     </div>
 
@@ -50,7 +50,7 @@
         <span>Topluluk hesabın yok mu? </span>
         <a routerLink="/register-club">Topluluk Kaydı</a>
       </div>
-      <div class="footer-link" style="margin-top:8px">
+      <div class="footer-link student-link">
         <span>Öğrenci misin? </span>
         <a routerLink="/login">Öğrenci Girişi</a>
       </div>

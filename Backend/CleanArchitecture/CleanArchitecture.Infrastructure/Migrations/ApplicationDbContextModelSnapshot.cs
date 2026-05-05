@@ -212,6 +212,10 @@ namespace CleanArchitecture.Infrastructure.Migrations
                     b.Property<Guid>("EventId")
                         .HasColumnType("char(36)");
 
+                    b.Property<Guid?>("ParentCommentId")
+                        .HasColumnType("char(36)")
+                        .HasCollation("ascii_general_ci");
+
                     b.Property<string>("UserFullName")
                         .HasMaxLength(200)
                         .HasColumnType("varchar(200)");
@@ -223,6 +227,8 @@ namespace CleanArchitecture.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EventId");
+
+                    b.HasIndex("ParentCommentId");
 
                     b.ToTable("Comments");
                 });
@@ -618,7 +624,14 @@ namespace CleanArchitecture.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("CleanArchitecture.Application.Entities.Comment", "ParentComment")
+                        .WithMany("Replies")
+                        .HasForeignKey("ParentCommentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Event");
+
+                    b.Navigation("ParentComment");
                 });
 
             modelBuilder.Entity("CleanArchitecture.Application.Entities.Event", b =>

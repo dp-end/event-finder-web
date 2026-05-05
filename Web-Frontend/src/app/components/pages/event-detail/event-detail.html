@@ -27,12 +27,6 @@
       }
       <h1>{{ event.title }}</h1>
       <div class="cover-meta">
-        <span class="like-count" [class.liked]="event.isLikedByCurrentUser">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-          </svg>
-          {{ event.likeCount }}
-        </span>
         <span class="comment-count">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
@@ -48,48 +42,49 @@
     <!-- ANA İÇERİK -->
     <div class="main-content">
 
-      <!-- KULÜP SATIRI -->
-      @if (event.clubId) {
-        <div class="club-row" [routerLink]="['/club', event.clubId]">
-          <div class="club-logo">{{ event.clubInitials }}</div>
-          <div class="club-info">
-            <span>Düzenleyen Topluluk</span>
-            <h4>{{ event.clubName }}</h4>
-          </div>
-          <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="9 18 15 12 9 6"></polyline>
-          </svg>
-        </div>
-      } @else if (event.ownerId) {
-        <div class="club-row" [routerLink]="['/home']" [queryParams]="{ownerId: event.ownerId}">
+      <!-- DÜZENLEYEN SATIRI -->
+      @if (event.clubId || event.ownerId) {
+        <button class="club-row" type="button" (click)="goToOrganizerProfile()">
           <div class="club-logo">
-            @if (event.ownerProfileImageUrl) {
-              <img [src]="resolveImageUrl(event.ownerProfileImageUrl)" [alt]="event.ownerName || 'Organizatör'" style="width:100%;height:100%;object-fit:cover">
+            @if (organizerProfileImageUrl) {
+              <img class="organizer-photo" [src]="resolveImageUrl(organizerProfileImageUrl)" [alt]="organizerName">
             } @else {
-              {{ event.ownerInitials || '?' }}
+              {{ organizerInitials }}
             }
           </div>
           <div class="club-info">
-            <span>Düzenleyen Kişi</span>
-            <h4>{{ event.ownerName || 'Organizatör' }}</h4>
+            <span>{{ organizerLabel }}</span>
+            <h4>{{ organizerName }}</h4>
           </div>
           <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="9 18 15 12 9 6"></polyline>
           </svg>
-        </div>
+        </button>
       }
 
       <!-- DETAY KARTLARI -->
       <div class="details-grid">
         <div class="detail-card">
-          <div class="icon-box">📅</div>
+          <div class="icon-box" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="3"></rect>
+              <path d="M16 2v4"></path>
+              <path d="M8 2v4"></path>
+              <path d="M3 10h18"></path>
+            </svg>
+          </div>
           <div class="detail-text">
             <label>Tarih & Saat</label>
             <p>{{ formatDate(event.date) }}</p>
           </div>
         </div>
         <div class="detail-card">
-          <div class="icon-box">📍</div>
+          <div class="icon-box" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 12-9 12S3 17 3 10a9 9 0 1 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+          </div>
           <div class="detail-text">
             <label>Konum</label>
             <p>{{ event.location }}</p>
@@ -107,14 +102,21 @@
       </div>
 
       <!-- YORUMLAR -->
-      <div class="comments-section">
+      <div class="comments-section" #commentsSection id="comments">
         <h3>Yorumlar <span class="comment-badge">{{ event.commentCount }}</span></h3>
 
         <!-- Yorum yaz -->
         @if (isLoggedIn) {
+          @if (replyingTo) {
+            <div class="replying-banner">
+              <span><strong>{{ replyingTo.userFullName }}</strong> kullanicisina cevap yaziliyor</span>
+              <button type="button" (click)="cancelReply()">Iptal</button>
+            </div>
+          }
           <div class="comment-input-row">
-            <textarea [(ngModel)]="newComment"
-                      placeholder="Yorum yaz..."
+            <textarea #commentComposer
+                      [(ngModel)]="newComment"
+                      [placeholder]="replyingTo ? 'Cevabini yaz...' : 'Yorum yaz...'"
                       rows="3"
                       maxlength="500"></textarea>
             <button class="send-btn"
@@ -123,7 +125,7 @@
               @if (isPostingComment) {
                 <div class="mini-spinner"></div>
               } @else {
-                Gönder
+                {{ replyingTo ? 'Cevapla' : 'Gönder' }}
               }
             </button>
           </div>
@@ -141,18 +143,67 @@
         } @else {
           @for (comment of comments; track comment.id) {
             <div class="comment-item">
-              <div class="comment-avatar">{{ comment.userInitials }}</div>
+              <button class="comment-avatar" type="button" (click)="goToCommentOwner(comment)" [title]="comment.userFullName">
+                @if (commentAuthorImageUrl(comment)) {
+                  <img [src]="resolveImageUrl(commentAuthorImageUrl(comment))" [alt]="comment.userFullName">
+                } @else {
+                  {{ comment.userInitials }}
+                }
+              </button>
               <div class="comment-body">
                 <div class="comment-header">
-                  <strong>{{ comment.userFullName }}</strong>
+                  <button class="comment-author-btn" type="button" (click)="goToCommentOwner(comment)">
+                    {{ comment.userFullName }}
+                  </button>
                   <span class="comment-time">{{ formatDate(comment.createdAt) }}</span>
-                  @if (comment.applicationUserId === currentUserId) {
-                    <button class="delete-comment-btn"
-                            (click)="deleteComment(comment.id)"
-                            title="Sil">✕</button>
-                  }
                 </div>
                 <p>{{ comment.content }}</p>
+                <div class="comment-actions">
+                  <button class="reply-btn" type="button" (click)="replyTo(comment)">Cevapla</button>
+                  @if (comment.applicationUserId === currentUserId) {
+                    <button class="delete-comment-btn"
+                            type="button"
+                            (click)="deleteComment(comment.id)">
+                      Sil
+                    </button>
+                  }
+                </div>
+
+                @if (comment.replies?.length) {
+                  <div class="comment-replies">
+                    @for (reply of comment.replies; track reply.id) {
+                      <div class="comment-item reply-item">
+                        <button class="comment-avatar small" type="button" (click)="goToCommentOwner(reply)" [title]="reply.userFullName">
+                          @if (commentAuthorImageUrl(reply)) {
+                            <img [src]="resolveImageUrl(commentAuthorImageUrl(reply))" [alt]="reply.userFullName">
+                          } @else {
+                            {{ reply.userInitials }}
+                          }
+                        </button>
+                        <div class="comment-body">
+                          <div class="comment-header">
+                            <button class="comment-author-btn" type="button" (click)="goToCommentOwner(reply)">
+                              {{ reply.userFullName }}
+                            </button>
+                            <span class="comment-time">{{ formatDate(reply.createdAt) }}</span>
+                          </div>
+                          <p>
+                            @if (reply.replyToUserName) {
+                              <span class="reply-target">{{ reply.replyToUserName }}</span>
+                            }
+                            {{ reply.content }}
+                          </p>
+                          <div class="comment-actions">
+                            <button class="reply-btn" type="button" (click)="replyTo(reply)">Cevapla</button>
+                            @if (reply.applicationUserId === currentUserId) {
+                              <button class="delete-comment-btn" type="button" (click)="deleteComment(reply.id)">Sil</button>
+                            }
+                          </div>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
               </div>
             </div>
           } @empty {
@@ -194,7 +245,10 @@
 
         @if (event.hasTicket) {
           <div class="has-ticket-badge">
-            ✅ Biletiniz mevcut
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            Biletiniz mevcut
           </div>
           <button class="view-tickets-btn" routerLink="/tickets">Biletlerime Git</button>
         } @else if (event.remainingQuota === 0) {
@@ -213,7 +267,13 @@
           </button>
         }
 
-        <p class="secure-text">🔒 Güvenli işlem</p>
+        <p class="secure-text">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          Güvenli işlem
+        </p>
       </div>
 
       <!-- BEĞEN BUTONU -->

@@ -87,6 +87,7 @@ namespace CleanArchitecture.Infrastructure.Repositories
                 : null;
             var organizerName = e.Club?.Name ?? BuildUserName(owner);
             var organizerInitials = e.Club?.Initials ?? BuildInitials(organizerName);
+            var organizerProfileImageUrl = e.Club?.ProfileImageUrl ?? owner?.ProfileImageUrl;
 
             return new EventDto
             {
@@ -104,11 +105,12 @@ namespace CleanArchitecture.Infrastructure.Repositories
                 OwnerId = e.OwnerId,
                 OrganizerName = organizerName,
                 OrganizerInitials = organizerInitials,
-                OrganizerProfileImageUrl = owner?.ProfileImageUrl,
+                OrganizerProfileImageUrl = organizerProfileImageUrl,
                 CategoryId = e.CategoryId,
                 CategoryName = e.Category?.Name,
                 ClubId = e.ClubId,
                 ClubName = organizerName,
+                ClubProfileImageUrl = e.Club?.ProfileImageUrl,
                 ClubInitials = organizerInitials,
                 IsClubFollowedByCurrentUser = currentUserId != null && (e.Club?.Followers?.Any(f => f.ApplicationUserId == currentUserId) ?? false),
                 LikeCount = e.Likes?.Count ?? 0,
@@ -223,6 +225,7 @@ namespace CleanArchitecture.Infrastructure.Repositories
                 .Include(e => e.Club)
                 .Include(e => e.Category)
                 .Include(e => e.Likes)
+                .Include(e => e.Comments)
                 .Include(e => e.Tickets)
                 .AsNoTracking();
         }
@@ -258,21 +261,26 @@ namespace CleanArchitecture.Infrastructure.Repositories
             {
                 var owner = owners.TryGetValue(e.OwnerId ?? "", out var foundOwner) ? foundOwner : null;
                 var organizerName = e.Club?.Name ?? BuildUserName(owner);
+                var organizerInitials = e.Club?.Initials ?? BuildInitials(organizerName);
+                var organizerProfileImageUrl = e.Club?.ProfileImageUrl ?? owner?.ProfileImageUrl;
                 return new EventListDto
                 {
                     Id = e.Id,
                     Title = e.Title,
                     OwnerId = e.OwnerId,
                     OrganizerName = organizerName,
-                    OrganizerInitials = e.Club?.Initials ?? BuildInitials(organizerName),
-                    OrganizerProfileImageUrl = owner?.ProfileImageUrl,
+                    OrganizerInitials = organizerInitials,
+                    OrganizerProfileImageUrl = organizerProfileImageUrl,
                     ClubId = e.ClubId,
+                    ClubInitials = e.Club?.Initials,
+                    ClubProfileImageUrl = e.Club?.ProfileImageUrl,
                     ClubName = organizerName,
                     CategoryName = e.Category?.Name,
                     Price = e.Price,
                     Date = e.Date,
                     ImageUrl = e.ImageUrl,
                     LikeCount = e.Likes?.Count ?? 0,
+                    CommentCount = e.Comments?.Count ?? 0,
                     IsLikedByCurrentUser = currentUserId != null && (e.Likes?.Any(l => l.ApplicationUserId == currentUserId) ?? false)
                 };
             }).ToList();

@@ -88,14 +88,16 @@ class _EtkinlikDetayEkraniState extends State<EtkinlikDetayEkrani> {
     if (!_requireLogin()) return;
     if (_eventId == null || _busy) return;
 
+    final wasLiked = _event?['isLikedByCurrentUser'] == true;
+    final previousCount = (_event?['likeCount'] as num?)?.toInt() ?? 0;
     setState(() => _busy = true);
     try {
       final result = await ApiClient.post('/Events/$_eventId/like') as Map<String, dynamic>;
       final liked = result['liked'] == true;
       setState(() {
         _event!['isLikedByCurrentUser'] = liked;
-        final current = (_event?['likeCount'] as num?)?.toInt() ?? 0;
-        _event!['likeCount'] = liked ? current + 1 : (current > 0 ? current - 1 : 0);
+        final delta = liked == wasLiked ? 0 : (liked ? 1 : -1);
+        _event!['likeCount'] = (previousCount + delta).clamp(0, 1 << 31);
       });
     } catch (e) {
       _show(e.toString());
@@ -273,6 +275,7 @@ class _EtkinlikDetayEkraniState extends State<EtkinlikDetayEkrani> {
     final imageUrl = (event['imageUrl'] ?? '').toString().isEmpty
         ? 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800'
         : AppConstants.resolveUrl(event['imageUrl'].toString());
+    final organizerImageUrl = (event['organizerProfileImageUrl'] ?? event['clubProfileImageUrl'] ?? '').toString();
     final price = (event['price'] as num?) ?? 0;
 
     return Scaffold(
@@ -327,7 +330,14 @@ class _EtkinlikDetayEkraniState extends State<EtkinlikDetayEkrani> {
                   const Divider(height: 32),
                   Row(
                     children: [
-                      CircleAvatar(child: Text(_initials(event['organizerInitials']?.toString() ?? event['clubInitials']?.toString() ?? event['organizerName']?.toString() ?? 'EF'))),
+                      CircleAvatar(
+                        backgroundImage: organizerImageUrl.isNotEmpty
+                            ? NetworkImage(AppConstants.resolveUrl(organizerImageUrl))
+                            : null,
+                        child: organizerImageUrl.isEmpty
+                            ? Text(_initials(event['organizerInitials']?.toString() ?? event['clubInitials']?.toString() ?? event['organizerName']?.toString() ?? 'EF'))
+                            : null,
+                      ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: InkWell(
@@ -430,9 +440,15 @@ class _EtkinlikDetayEkraniState extends State<EtkinlikDetayEkrani> {
   Widget _commentTile(Map<String, dynamic> comment) {
     final ownerId = comment['applicationUserId']?.toString();
     final canDelete = ownerId != null && ownerId == ApiClient.currentUserId;
+    final profileImageUrl = (comment['userProfileImageUrl'] ?? '').toString();
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      leading: CircleAvatar(child: Text(_initials(comment['userInitials']?.toString() ?? '?'))),
+      leading: CircleAvatar(
+        backgroundImage: profileImageUrl.isNotEmpty
+            ? NetworkImage(AppConstants.resolveUrl(profileImageUrl))
+            : null,
+        child: profileImageUrl.isEmpty ? Text(_initials(comment['userInitials']?.toString() ?? '?')) : null,
+      ),
       title: InkWell(
         onTap: ownerId == null || ownerId.isEmpty
             ? null

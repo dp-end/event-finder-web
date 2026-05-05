@@ -31,6 +31,20 @@ export class ClupDetails implements OnInit, OnDestroy {
     return this.authService.isLoggedIn();
   }
 
+  get uploadedEventCount(): number {
+    return this.clubEvents.length || this.club?.eventCount || 0;
+  }
+
+  get canEditClub(): boolean {
+    const user = this.authService.getCurrentUser();
+    if (!this.club || !user) return false;
+    return user.id === this.club.id || user.clubId === this.club.id;
+  }
+
+  get clubProfileImageUrl(): string | undefined {
+    return this.club?.profileImageUrl;
+  }
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,

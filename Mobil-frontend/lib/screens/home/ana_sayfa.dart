@@ -331,11 +331,11 @@ class _AnaSayfaState extends State<AnaSayfa> {
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   children: _populerKulupler.isEmpty
-                      ? [_buildKulupKutusu(context, 'EF', 'Event Finder', isDark, null)]
+                      ? [_buildKulupKutusu(context, 'EF', 'Event Finder', isDark, null, null)]
                       : _populerKulupler.map((club) {
                           final name = club['name']?.toString() ?? 'Kulup';
                           final initials = club['initials']?.toString() ?? _kulupBasHarfleri(name);
-                          return _buildKulupKutusu(context, initials, name, isDark, club['id']?.toString());
+                          return _buildKulupKutusu(context, initials, name, isDark, club['id']?.toString(), club['profileImageUrl']?.toString());
                         }).toList(),
                 ),
               ),
@@ -403,13 +403,14 @@ class _AnaSayfaState extends State<AnaSayfa> {
                     final fiyat = (etkinlik['price'] as num?) ?? 0;
                     return EtkinlikKarti(
                       baslik: etkinlik['title']?.toString() ?? '',
-                      kulup: etkinlik['organizerName']?.toString() ?? etkinlik['clubName']?.toString() ?? 'Kullanici Etkinligi',
+                      kulup: etkinlik['clubName']?.toString() ?? etkinlik['organizerName']?.toString() ?? 'Kullanici Etkinligi',
                       fiyat: fiyat == 0 ? 'Ucretsiz' : 'TL ${fiyat.toStringAsFixed(0)}',
                       tarih: etkinlik['date'] != null ? _formatTarih(etkinlik['date'].toString()) : 'Tarih belirtilmemis',
                       resimUrl: etkinlik['imageUrl']?.toString() ?? 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400',
                       etkinlikId: etkinlik['id']?.toString(),
                       clubId: etkinlik['clubId']?.toString(),
                       ownerId: etkinlik['ownerId']?.toString(),
+                      organizerImageUrl: etkinlik['organizerProfileImageUrl']?.toString() ?? etkinlik['clubProfileImageUrl']?.toString(),
                       likeCount: (etkinlik['likeCount'] as num?)?.toInt() ?? 0,
                       isLiked: etkinlik['isLikedByCurrentUser'] == true,
                     );
@@ -445,7 +446,7 @@ class _AnaSayfaState extends State<AnaSayfa> {
     return aylar[ay - 1];
   }
 
-  Widget _buildKulupKutusu(BuildContext context, String harf, String isim, bool isDark, String? clubId) {
+  Widget _buildKulupKutusu(BuildContext context, String harf, String isim, bool isDark, String? clubId, String? imageUrl) {
     final args = <String, String>{'kulupAdi': isim};
     if (clubId != null) args['clubId'] = clubId;
 
@@ -464,7 +465,12 @@ class _AnaSayfaState extends State<AnaSayfa> {
           children: [
             CircleAvatar(
               backgroundColor: const Color(0xFF1D4ED8).withValues(alpha: 0.1),
-              child: Text(harf, style: const TextStyle(color: Color(0xFF1D4ED8), fontWeight: FontWeight.bold)),
+              backgroundImage: imageUrl != null && imageUrl.isNotEmpty
+                  ? NetworkImage(AppConstants.resolveUrl(imageUrl))
+                  : null,
+              child: imageUrl == null || imageUrl.isEmpty
+                  ? Text(harf, style: const TextStyle(color: Color(0xFF1D4ED8), fontWeight: FontWeight.bold))
+                  : null,
             ),
             const SizedBox(height: 8),
             Text(isim, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12), overflow: TextOverflow.ellipsis),
