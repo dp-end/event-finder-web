@@ -106,7 +106,7 @@
   </main>
 
   @if (activeDialog) {
-    <div class="modal-backdrop" (click)="closeDialog()"></div>
+    <div class="modal-backdrop"></div>
 
     @if (activeDialog === 'profile') {
       <section class="settings-modal wide-modal" role="dialog" aria-modal="true" [attr.aria-label]="t('editProfile')">
@@ -137,7 +137,7 @@
               </label>
               <label class="form-field">
                 <span>{{ t('clubCoverImageUrl') }}</span>
-                <input type="url" name="clubCoverImageUrl" [(ngModel)]="profileForm.clubCoverImageUrl">
+                <input type="text" name="clubCoverImageUrl" [(ngModel)]="profileForm.clubCoverImageUrl">
               </label>
               <label class="form-field">
                 <span>{{ t('clubInstagramHandle') }}</span>
@@ -164,7 +164,7 @@
             </label>
             <label class="form-field full-row">
               <span>{{ t('profileImageUrl') }}</span>
-              <input type="url" name="profileImageUrl" [(ngModel)]="profileForm.profileImageUrl">
+              <input type="text" name="profileImageUrl" [(ngModel)]="profileForm.profileImageUrl">
             </label>
 
             <div class="modal-actions">

@@ -22,6 +22,7 @@ class _EtkinlikOlusturEkraniState extends State<EtkinlikOlusturEkrani> {
   Uint8List? _seciliFotoBytes;
   String? _editEventId;
   String? _existingImageUrl;
+  String? _urlIleFoto; // URL ile girilen fotoğraf
   bool _argsLoaded = false;
 
   // Form kontrolcüleri
@@ -123,7 +124,11 @@ class _EtkinlikOlusturEkraniState extends State<EtkinlikOlusturEkrani> {
 
       final token = CampusHubApp.tokenNotifier.value;
       final url = Uri.parse('${AppConstants.apiUrl}/Events');
-      final imageUrl = _seciliFoto == null ? (_existingImageUrl ?? '') : await _fotoYukle();
+      final imageUrl = _urlIleFoto != null
+          ? _urlIleFoto!
+          : _seciliFoto != null
+              ? await _fotoYukle()
+              : (_existingImageUrl ?? '');
 
       final body = {
         'title':       _baslikController.text.trim(),
@@ -199,8 +204,104 @@ class _EtkinlikOlusturEkraniState extends State<EtkinlikOlusturEkrani> {
     setState(() {
       _seciliFoto = picked;
       _seciliFotoBytes = bytes;
+      _urlIleFoto = null;
       _fotoSecildi = true;
     });
+  }
+
+  Future<void> _urlIleEkle() async {
+    final controller = TextEditingController();
+    String? sonuc;
+
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setS) => AlertDialog(
+          title: const Text('Fotoğraf URL\'si'),
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+            keyboardType: TextInputType.url,
+            autocorrect: false,
+            enableSuggestions: false,
+            decoration: InputDecoration(
+              hintText: 'https://example.com/image.jpg',
+              prefixIcon: const Icon(Icons.link),
+              suffixIcon: controller.text.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
+                        controller.clear();
+                        setS(() {});
+                      },
+                    )
+                  : null,
+            ),
+            onChanged: (_) => setS(() {}),
+            onSubmitted: (v) {
+              sonuc = v.trim();
+              Navigator.pop(ctx);
+            },
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('İptal')),
+            ElevatedButton(
+              onPressed: () {
+                sonuc = controller.text.trim();
+                Navigator.pop(ctx);
+              },
+              child: const Text('Ekle'),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    final url = sonuc;
+    if (url == null || url.isEmpty) return;
+
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Geçerli bir URL girin (http:// veya https://)'), backgroundColor: Colors.red),
+      );
+      return;
+    }
+
+    setState(() {
+      _urlIleFoto = url;
+      _seciliFoto = null;
+      _seciliFotoBytes = null;
+      _fotoSecildi = true;
+    });
+  }
+
+  void _fotoEkleSecenekleri() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 8),
+            Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2))),
+            const SizedBox(height: 12),
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: const Text('Galeriden Seç'),
+              onTap: () { Navigator.pop(ctx); _fotoSec(); },
+            ),
+            ListTile(
+              leading: const Icon(Icons.link),
+              title: const Text('URL ile Ekle'),
+              onTap: () { Navigator.pop(ctx); _urlIleEkle(); },
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<String> _fotoYukle() async {
@@ -263,7 +364,7 @@ class _EtkinlikOlusturEkraniState extends State<EtkinlikOlusturEkrani> {
                     const Text('Etkinlik Afişi', style: TextStyle(fontWeight: FontWeight.bold)),
                     const SizedBox(height: 8),
                     GestureDetector(
-                      onTap: _fotoSec,
+                      onTap: _fotoEkleSecenekleri,
                       child: Container(
                         height: 180,
                         width: double.infinity,
@@ -283,7 +384,11 @@ class _EtkinlikOlusturEkraniState extends State<EtkinlikOlusturEkrani> {
                                     borderRadius: BorderRadius.circular(14),
                                     child: _seciliFotoBytes != null
                                         ? Image.memory(_seciliFotoBytes!, fit: BoxFit.cover)
-                                        : Image.network(AppConstants.resolveUrl(_existingImageUrl!), fit: BoxFit.cover),
+                                        : Image.network(
+                                            _urlIleFoto ?? AppConstants.resolveUrl(_existingImageUrl ?? ''),
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (_, __, _) => const Center(child: Icon(Icons.broken_image, size: 48, color: Colors.grey)),
+                                          ),
                                   ),
                                   Positioned(
                                     top: 8,

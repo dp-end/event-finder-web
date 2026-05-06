@@ -20,19 +20,3 @@
   padding: 0;
   position: relative;
 }
-
-.page-content::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 7px;
-  height: 100vh;
-  background: linear-gradient(180deg, var(--lime), var(--brand), var(--pink));
-  opacity: .9;
-  z-index: 20;
-}
-
-@media (max-width: 720px) {
-  .page-content::before { width: 0; }
-}
